@@ -1,0 +1,215 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: black;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.screen-wrapper {
+    width: 100%;
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+#startscreen,
+#game-container,
+#game-over-screen,
+#you-win-screen {
+    width: 720px;
+}
+
+canvas {
+    background-color: black;
+    display: block;
+}
+
+.canvas-wrapper {
+    position: relative;
+    width: 720px;
+    height: 480px;
+    overflow: hidden;
+}
+
+#startscreen {
+    position: relative;
+}
+
+#startscreen img {
+    width: 100%;
+    display: block;
+}
+
+.start-btn {
+    padding: 15px 40px;
+    font-size: 22px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    background-color: #ffcc00;
+    cursor: pointer;
+}
+
+.start-btn:hover {
+    background-color: #ffaa00;
+}
+
+#startscreen .start-btn {
+    position: absolute;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#game-container h1 {
+    color: white;
+    margin: 0 0 16px 0;
+}
+
+.end-screen {
+    position: relative;
+}
+
+.end-screen img {
+    width: 100%;
+    display: block;
+}
+
+.end-screen-buttons {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+}
+
+.end-screen-buttons .start-btn {
+    position: static;
+    transform: none;
+}
+
+#mobile-controls {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 12px;
+    display: none;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    box-sizing: border-box;
+    z-index: 5;
+}
+
+.mobile-left,
+.mobile-right {
+    display: flex;
+    gap: 8px;
+}
+
+.mobile-btn {
+    width: 46px;
+    height: 46px;
+    border: none;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: bold;
+    background-color: rgba(255, 204, 0, 0.45);
+    color: black;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+}
+
+.d-none {
+    display: none !important;
+}
+
+@media (max-width: 1024px) {
+    #mobile-controls {
+        display: flex;
+    }
+}
+
+@media (max-width: 760px) {
+    #startscreen,
+    #game-container,
+    #game-over-screen,
+    #you-win-screen,
+    .end-screen {
+        width: 100vw;
+    }
+
+    .canvas-wrapper {
+        width: 100vw;
+        height: calc(100vw * 0.6667);
+        max-height: 100vh;
+        overflow: hidden;
+    }
+
+    canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    #game-container h1 {
+        display: none;
+    }
+
+    .mobile-btn {
+        width: 42px;
+        height: 42px;
+        font-size: 12px;
+    }
+
+    .end-screen-buttons {
+        bottom: 20px;
+        gap: 10px;
+    }
+
+    .end-screen-buttons .start-btn {
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 6px;
+    }
+
+    #rotate-device {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: black;
+    color: white;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    text-align: center;
+    z-index: 100;
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+    #rotate-device {
+        display: flex;
+    }
+    .screen-wrapper {
+    justify-content: center;
+}
+}
+}
