@@ -8,6 +8,33 @@ class Charackter extends MovableObject {
     lastHit = 0;
     bottles = 0;
     coins = 0;
+    lastAction = new Date().getTime();
+
+    IMAGES_IDLE = [
+        'img/2_character_pepe/1_idle/idle/I-1.png',
+        'img/2_character_pepe/1_idle/idle/I-2.png',
+        'img/2_character_pepe/1_idle/idle/I-3.png',
+        'img/2_character_pepe/1_idle/idle/I-4.png',
+        'img/2_character_pepe/1_idle/idle/I-5.png',
+        'img/2_character_pepe/1_idle/idle/I-6.png',
+        'img/2_character_pepe/1_idle/idle/I-7.png',
+        'img/2_character_pepe/1_idle/idle/I-8.png',
+        'img/2_character_pepe/1_idle/idle/I-9.png',
+        'img/2_character_pepe/1_idle/idle/I-10.png'
+    ];
+
+    IMAGES_LONG_IDLE = [
+        'img/2_character_pepe/1_idle/long_idle/I-11.png',
+        'img/2_character_pepe/1_idle/long_idle/I-12.png',
+        'img/2_character_pepe/1_idle/long_idle/I-13.png',
+        'img/2_character_pepe/1_idle/long_idle/I-14.png',
+        'img/2_character_pepe/1_idle/long_idle/I-15.png',
+        'img/2_character_pepe/1_idle/long_idle/I-16.png',
+        'img/2_character_pepe/1_idle/long_idle/I-17.png',
+        'img/2_character_pepe/1_idle/long_idle/I-18.png',
+        'img/2_character_pepe/1_idle/long_idle/I-19.png',
+        'img/2_character_pepe/1_idle/long_idle/I-20.png'
+    ];
 
     images_walking = [
         'img/2_character_pepe/2_walk/W-21.png',
@@ -64,6 +91,8 @@ class Charackter extends MovableObject {
     constructor() {
         super();
         this.loadImage(this.images_walking[0]);
+        this.loadImages(this.IMAGES_IDLE);
+        this.loadImages(this.IMAGES_LONG_IDLE);
         this.loadImages(this.images_walking);
         this.loadImages(this.images_jumping);
         this.loadImages(this.IMAGES_DEAD);
@@ -76,6 +105,11 @@ class Charackter extends MovableObject {
     animate() {
         setInterval(() => {
             if (!this.world) return;
+            if (this.isDead()) return;
+
+            if (this.isDoingSomething()) {
+                this.lastAction = new Date().getTime();
+            }
 
             if (this.world.keyboard.right && this.x < this.world.level.level_end_x - this.width) {
                 this.moveRight();
@@ -105,20 +139,40 @@ class Charackter extends MovableObject {
         }, 1000 / 60);
 
         setInterval(() => {
+            if (!this.world) return;
+
             if (this.isDead()) {
                 this.playAnimation(this.IMAGES_DEAD);
             } else if (this.isHurt()) {
                 this.playAnimation(this.IMAGES_HURT);
             } else if (this.isAboveGround()) {
                 this.playAnimation(this.images_jumping);
-            } else if (this.world && (this.world.keyboard.right || this.world.keyboard.left)) {
+            } else if (this.world.keyboard.right || this.world.keyboard.left) {
                 this.playAnimation(this.images_walking);
+            } else if (this.isSleeping()) {
+                this.playAnimation(this.IMAGES_LONG_IDLE);
+            } else {
+                this.playAnimation(this.IMAGES_IDLE);
             }
         }, 120);
     }
 
+    isDoingSomething() {
+        return this.world.keyboard.right ||
+            this.world.keyboard.left ||
+            this.world.keyboard.up ||
+            this.world.keyboard.space ||
+            this.world.keyboard.throw;
+    }
+
+    isSleeping() {
+        let timePassed = new Date().getTime() - this.lastAction;
+        return timePassed > 5000;
+    }
+
     jump() {
         this.speedY = 30;
+        this.lastAction = new Date().getTime();
     }
 
     hit() {
@@ -130,6 +184,7 @@ class Charackter extends MovableObject {
         }
 
         this.lastHit = new Date().getTime();
+        this.lastAction = new Date().getTime();
     }
 
     isHurt() {
@@ -144,12 +199,14 @@ class Charackter extends MovableObject {
 
     collectBottle() {
         this.bottles += 1;
+        this.lastAction = new Date().getTime();
     }
 
     collectCoin() {
         if (this.coins < 5) {
             this.coins += 1;
         }
+        this.lastAction = new Date().getTime();
     }
 
     canThrowBottle() {
@@ -160,5 +217,6 @@ class Charackter extends MovableObject {
         if (this.bottles > 0) {
             this.bottles -= 1;
         }
+        this.lastAction = new Date().getTime();
     }
 }

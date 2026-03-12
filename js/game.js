@@ -60,6 +60,22 @@ function goToHome() {
     document.getElementById('startscreen').classList.remove('d-none');
 }
 
+/**
+ * Öffnet den Info Dialog.
+ */
+function openInfo() {
+    document.getElementById('info-overlay').classList.remove('d-none');
+}
+
+/**
+ * Schließt den Info Dialog.
+ */
+function closeInfo(event) {
+    if (!event || event.target.id === 'info-overlay' || event.target.id === 'close-info-btn') {
+        document.getElementById('info-overlay').classList.add('d-none');
+    }
+}
+
 window.addEventListener('keydown', (e) => {
     if (e.code === 'ArrowRight') keyboard.right = true;
     if (e.code === 'ArrowLeft') keyboard.left = true;

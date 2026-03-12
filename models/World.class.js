@@ -5,6 +5,8 @@ class World {
     statusBar = new StatusBar();
     coinStatusBar = new CoinStatusBar();
     bottleStatusBar = new BottleStatusBar();
+    bossStatusBar = new BossStatusBar();
+    bossBarVisible = false;
 
     canvas;
     ctx;
@@ -31,6 +33,7 @@ class World {
         setInterval(() => {
             if (this.gameOver || this.gameWon) return;
 
+            this.checkBossBar();
             this.checkCharacterEnemyCollisions();
             this.checkBottleCollection();
             this.checkCoinCollection();
@@ -43,6 +46,20 @@ class World {
             this.coinStatusBar.setPercentage(this.character.coins * 20);
             this.bottleStatusBar.setPercentage(this.character.bottles * 20);
         }, 100);
+    }
+
+    checkBossBar() {
+        let boss = this.level.enemies.find((enemy) => enemy instanceof Endboss);
+
+        if (!boss) return;
+
+        if (this.character.x > 1500) {
+            this.bossBarVisible = true;
+        }
+
+        if (this.bossBarVisible) {
+            this.bossStatusBar.setPercentage(boss.energy);
+        }
     }
 
     checkCharacterEnemyCollisions() {
@@ -143,11 +160,13 @@ class World {
     checkGameWon() {
         this.level.enemies.forEach((enemy) => {
             if (enemy instanceof Endboss && enemy.isDead && enemy.isDead()) {
-                this.gameWon = true;
-                this.stopGame();
-                setTimeout(() => {
+                let timePassed = new Date().getTime() - enemy.deadTime;
+
+                if (timePassed > 1000) {
+                    this.gameWon = true;
+                    this.stopGame();
                     showYouWinScreen();
-                }, 1000);
+                }
             }
         });
     }
@@ -167,8 +186,9 @@ class World {
                 return true;
             }
 
-            if (typeof enemy.isDead === 'function') {
-                return !enemy.isDead();
+            if (typeof enemy.isDead === 'function' && enemy.isDead()) {
+                let timePassed = new Date().getTime() - enemy.deadTime;
+                return timePassed < 800;
             }
 
             return true;
@@ -194,6 +214,10 @@ class World {
         this.addToMap(this.statusBar);
         this.addToMap(this.coinStatusBar);
         this.addToMap(this.bottleStatusBar);
+
+        if (this.bossBarVisible) {
+            this.addToMap(this.bossStatusBar);
+        }
 
         requestAnimationFrame(() => this.draw());
     }
