@@ -1,7 +1,12 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: black;
+
+    background-image: url("img/el_pollo_background.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
     min-height: 100vh;
     overflow: hidden;
 }
@@ -16,6 +21,8 @@ body {
     overflow: hidden;
     padding: 0 10px;
     box-sizing: border-box;
+
+    backdrop-filter: blur(3px);
 }
 
 #startscreen,
@@ -35,10 +42,19 @@ canvas {
     width: 720px;
     height: 480px;
     overflow: hidden;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 0 70px rgba(0,0,0,0.9),
+        0 0 20px rgba(255,200,0,0.4);
+
+    border: 3px solid rgba(255,255,255,0.15);
 }
 
 #startscreen {
     position: relative;
+    animation: fadeInGame 1s ease;
 }
 
 #startscreen img {
@@ -54,10 +70,13 @@ canvas {
     border-radius: 8px;
     background-color: #ffcc00;
     cursor: pointer;
+
+    transition: all 0.2s ease;
 }
 
 .start-btn:hover {
     background-color: #ffaa00;
+    transform: scale(1.05);
 }
 
 #startscreen .start-btn {
@@ -65,6 +84,7 @@ canvas {
     bottom: 60px;
     left: 50%;
     transform: translateX(-50%);
+    animation: pulseGame 2s infinite;
 }
 
 .info-btn {
@@ -78,10 +98,13 @@ canvas {
     border-radius: 8px;
     background-color: #ffcc00;
     cursor: pointer;
+
+    transition: all 0.2s ease;
 }
 
 .info-btn:hover {
     background-color: #ffaa00;
+    transform: scale(1.05);
 }
 
 #game-container {
@@ -240,6 +263,7 @@ canvas {
 }
 
 @media (max-width: 760px) {
+
     #startscreen,
     #game-container,
     #game-over-screen,
@@ -297,5 +321,33 @@ canvas {
 @media (max-width: 760px) and (orientation: portrait) {
     #rotate-device {
         display: flex;
+    }
+}
+
+@keyframes fadeInGame {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pulseGame {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(255,204,0,0.6);
+    }
+
+    50% {
+        transform: scale(1.06);
+        box-shadow: 0 0 20px rgba(255,204,0,0.9);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(255,204,0,0.6);
     }
 }
