@@ -28,6 +28,10 @@ class World {
 
     setWorld() {
         this.character.world = this;
+
+        this.level.enemies.forEach(enemy => {
+            enemy.world = this;
+        });
     }
 
     run() {
@@ -61,6 +65,7 @@ class World {
 
         if (this.character.x > 1500) {
             this.bossBarVisible = true;
+            boss.activated = true;
         }
 
         if (this.bossBarVisible) {
@@ -74,8 +79,10 @@ class World {
                 return;
             }
 
-            if (this.character.isColliding(enemy)) {
-                if (!(enemy instanceof Endboss) && this.characterIsAboveEnemy(enemy)) {
+            if (enemy instanceof Endboss) {
+    this.handleBossCollision(enemy);
+} else if (this.character.isColliding(enemy)) {
+    if (this.characterIsAboveEnemy(enemy)) {
                     if (typeof enemy.hit === 'function') {
                         enemy.hit();
                     }
@@ -87,6 +94,29 @@ class World {
             }
         });
     }
+
+   handleBossCollision(boss) {
+    if (!boss.attacking) {
+        return;
+    }
+
+    if (!boss.characterInAttackRange(this.character)) {
+        return;
+    }
+
+    if (this.character.isHurt()) {
+        return;
+    }
+
+    this.character.hit();
+    this.statusBar.setPercentage(this.character.energy);
+
+    if (this.character.x < boss.x) {
+        this.character.x -= 40;
+    } else {
+        this.character.x += 40;
+    }
+}
 
     characterIsAboveEnemy(enemy) {
         return this.character.speedY < 0 &&

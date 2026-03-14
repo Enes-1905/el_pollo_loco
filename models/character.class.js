@@ -171,7 +171,7 @@ IMAGES_HURT = [
     }
 
     jump() {
-        this.speedY = 30;
+        this.speedY = 22;
         this.lastAction = new Date().getTime();
     }
 

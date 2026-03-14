@@ -41,15 +41,15 @@ let level1;
 function initLevel() {
     level1 = new Level(
         [
-            new Chicken(400),
-            new SmallChicken(550),
             new Chicken(700),
             new SmallChicken(900),
-            new Chicken(1000),
-            new Chicken(1300),
-            new SmallChicken(1450),
-            new Chicken(1500),
-            new Endboss(1800)
+            new Chicken(1150),
+            new SmallChicken(1350),
+            new Chicken(1550),
+            new Chicken(1750),
+            new SmallChicken(1950),
+            new Chicken(2200),
+            new Endboss(2600)
         ],
 
         [
@@ -57,23 +57,23 @@ function initLevel() {
         ],
 
         [
-            new Bottle(200),
-            new Bottle(300),
+            new Bottle(250),
             new Bottle(450),
-            new Bottle(600),
-            new Bottle(850),
-            new Bottle(1000),
-            new Bottle(1150),
-            new Bottle(1300),
-            new Bottle(1500)
+            new Bottle(700),
+            new Bottle(950),
+            new Bottle(1200),
+            new Bottle(1450),
+            new Bottle(1700),
+            new Bottle(2000),
+            new Bottle(2300)
         ],
 
         [
-            new Coin(250, 120),
-            new Coin(550, 100),
-            new Coin(900, 120),
-            new Coin(1250, 100),
-            new Coin(1600, 120)
+            new Coin(350, 120),
+            new Coin(800, 100),
+            new Coin(1250, 120),
+            new Coin(1700, 100),
+            new Coin(2150, 120)
         ],
 
         [
@@ -99,7 +99,13 @@ function initLevel() {
             new BackgroundObject('img/5_background/layers/4_clouds/1.png', 719 * 2, 0),
             new BackgroundObject('img/5_background/layers/3_third_layer/1.png', 719 * 2, 0),
             new BackgroundObject('img/5_background/layers/2_second_layer/1.png', 719 * 2, 0),
-            new BackgroundObject('img/5_background/layers/1_first_layer/1.png', 719 * 2, 0)
+            new BackgroundObject('img/5_background/layers/1_first_layer/1.png', 719 * 2, 0),
+
+            new BackgroundObject('img/5_background/layers/air.png', 719 * 3, 0),
+            new BackgroundObject('img/5_background/layers/4_clouds/2.png', 719 * 3, 0),
+            new BackgroundObject('img/5_background/layers/3_third_layer/2.png', 719 * 3, 0),
+            new BackgroundObject('img/5_background/layers/2_second_layer/2.png', 719 * 3, 0),
+            new BackgroundObject('img/5_background/layers/1_first_layer/2.png', 719 * 3, 0)
         ]
     );
 }
