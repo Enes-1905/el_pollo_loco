@@ -1,8 +1,11 @@
 class ThrowableObject extends MovableObject {
+
     width = 60;
     height = 80;
     hasHit = false;
     removeFromWorld = false;
+    throwInterval = null;
+    rotationInterval = null;
 
     IMAGES_ROTATION = [
         'img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png',
@@ -37,8 +40,11 @@ class ThrowableObject extends MovableObject {
         this.speedY = 22;
         this.applyGravity();
 
-        setInterval(() => {
-            if (this.hasHit) return;
+        this.throwInterval = setInterval(() => {
+            if (this.hasHit) {
+                clearInterval(this.throwInterval);
+                return;
+            }
 
             if (throwToLeft) {
                 this.x -= 10;
@@ -47,19 +53,34 @@ class ThrowableObject extends MovableObject {
             }
         }, 1000 / 60);
 
-        setInterval(() => {
-            if (this.hasHit) return;
+        this.rotationInterval = setInterval(() => {
+            if (this.hasHit) {
+                clearInterval(this.rotationInterval);
+                return;
+            }
+
             this.playAnimation(this.IMAGES_ROTATION);
         }, 100);
     }
 
     splash() {
-        if (this.hasHit) return;
+        if (this.hasHit) {
+            return;
+        }
 
         this.hasHit = true;
+
+        if (this.throwInterval) {
+            clearInterval(this.throwInterval);
+        }
+
+        if (this.rotationInterval) {
+            clearInterval(this.rotationInterval);
+        }
+
         let splashIndex = 0;
 
-        let splashInterval = setInterval(() => {
+        const splashInterval = setInterval(() => {
             if (splashIndex < this.IMAGES_SPLASH.length) {
                 this.img = this.imageCache[this.IMAGES_SPLASH[splashIndex]];
                 splashIndex++;
