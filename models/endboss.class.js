@@ -3,14 +3,14 @@ class Endboss extends MovableObject {
     height = 400;
     width = 250;
     y = 55;
-    energy = 60;
+    energy = 80;
     lastHit = 0;
     deadTime = 0;
-    speed = 2.5;
+    speed = 3;
     activated = false;
-    attackRange = 220;
+    attackRange = 200;
     lastAttack = 0;
-    attackCooldown = 1500;
+    attackCooldown = 1200;
     attacking = false;
 
     IMAGES_WALK = [
@@ -58,54 +58,85 @@ class Endboss extends MovableObject {
         super();
         this.x = x;
         this.otherdirection = false;
+        this.loadBossImages();
+        this.animate();
+    }
 
+    loadBossImages() {
         this.loadImage(this.IMAGES_ALERT[0]);
         this.loadImages(this.IMAGES_WALK);
         this.loadImages(this.IMAGES_ALERT);
         this.loadImages(this.IMAGES_ATTACK);
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.IMAGES_DEAD);
-
-        this.animate();
     }
 
     animate() {
         setInterval(() => {
-            if (this.isDead()) {
-                return;
-            }
+            if (worldObj && worldObj.isPaused) return;
 
-            if (this.activated && this.world) {
-                let characterX = this.world.character.x;
-                let distance = this.x - characterX;
-
-                if (Math.abs(distance) > this.attackRange && !this.attacking) {
-                    if (characterX < this.x) {
-                        this.moveLeft();
-                        this.otherdirection = false;
-                    } else {
-                        this.moveRight();
-                        this.otherdirection = true;
-                    }
-                } else if (Math.abs(distance) <= this.attackRange && this.canAttack()) {
-                    this.startAttack();
-                }
+            if (!this.isDead()) {
+                this.handleMovement();
             }
         }, 1000 / 60);
 
         setInterval(() => {
-            if (this.isDead()) {
-                this.playAnimation(this.IMAGES_DEAD);
-            } else if (this.isHurt()) {
-                this.playAnimation(this.IMAGES_HURT);
-            } else if (this.attacking) {
-                this.playAnimation(this.IMAGES_ATTACK);
-            } else if (this.isWalking()) {
-                this.playAnimation(this.IMAGES_WALK);
-            } else {
-                this.playAnimation(this.IMAGES_ALERT);
-            }
+            if (worldObj && worldObj.isPaused) return;
+            this.handleAnimation();
         }, 140);
+    }
+
+    handleMovement() {
+        if (!this.activated || !this.world) {
+            return;
+        }
+
+        let characterX = this.world.character.x;
+        let distance = this.x - characterX;
+
+        if (Math.abs(distance) > this.attackRange && !this.attacking) {
+            this.followCharacter(characterX);
+            return;
+        }
+
+        if (Math.abs(distance) <= this.attackRange && this.canAttack()) {
+            this.startAttack();
+        }
+    }
+
+    handleAnimation() {
+        if (this.isDead()) {
+            this.playAnimation(this.IMAGES_DEAD);
+            return;
+        }
+
+        if (this.isHurt()) {
+            this.playAnimation(this.IMAGES_HURT);
+            return;
+        }
+
+        if (this.attacking) {
+            this.playAnimation(this.IMAGES_ATTACK);
+            return;
+        }
+
+        if (this.isWalking()) {
+            this.playAnimation(this.IMAGES_WALK);
+            return;
+        }
+
+        this.playAnimation(this.IMAGES_ALERT);
+    }
+
+    followCharacter(characterX) {
+        if (characterX < this.x) {
+            this.moveLeft();
+            this.otherdirection = false;
+            return;
+        }
+
+        this.moveRight();
+        this.otherdirection = true;
     }
 
     moveLeft() {
@@ -134,6 +165,7 @@ class Endboss extends MovableObject {
         this.lastAttack = Date.now();
 
         setTimeout(() => {
+            if (worldObj && worldObj.isPaused) return;
             this.attacking = false;
         }, 700);
     }
@@ -150,27 +182,29 @@ class Endboss extends MovableObject {
                 width: hitboxWidth,
                 height: hitboxHeight
             };
-        } else {
-            return {
-                x: this.x - 30,
-                y: hitboxY,
-                width: hitboxWidth,
-                height: hitboxHeight
-            };
         }
+
+        return {
+            x: this.x - 30,
+            y: hitboxY,
+            width: hitboxWidth,
+            height: hitboxHeight
+        };
     }
 
     characterInAttackRange(character) {
         let hitbox = this.getAttackHitbox();
 
         return character.x + character.width > hitbox.x &&
-               character.y + character.height > hitbox.y &&
-               character.x < hitbox.x + hitbox.width &&
-               character.y < hitbox.y + hitbox.height;
+            character.y + character.height > hitbox.y &&
+            character.x < hitbox.x + hitbox.width &&
+            character.y < hitbox.y + hitbox.height;
     }
 
     hit() {
-        if (this.isDead()) return;
+        if (this.isDead()) {
+            return;
+        }
 
         this.energy -= 20;
 
@@ -178,20 +212,20 @@ class Endboss extends MovableObject {
             this.energy = 0;
         }
 
-        this.lastHit = new Date().getTime();
+        this.lastHit = Date.now();
 
         if (this.isDead()) {
-            this.deadTime = new Date().getTime();
+            this.deadTime = Date.now();
         }
     }
 
     isHurt() {
-        let timePassed = new Date().getTime() - this.lastHit;
+        let timePassed = Date.now() - this.lastHit;
         timePassed = timePassed / 1000;
         return timePassed < 0.5 && !this.isDead();
     }
 
     isDead() {
-        return this.energy == 0;
+        return this.energy === 0;
     }
 }

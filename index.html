@@ -7,23 +7,23 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" type="image/png" href="img/9_intro_outro_screens/start/startscreen_2.png" />
 
-<script src="models/drawable-object.class.js" defer></script>
-<script src="models/movable-object.class.js" defer></script>
-<script src="models/keyboard.class.js" defer></script>
-<script src="models/level.class.js" defer></script>
-<script src="models/background-object.class.js" defer></script>
-<script src="models/cloud.class.js" defer></script>
-<script src="models/bottle.class.js" defer></script>
-<script src="models/chicken.class.js" defer></script>
-<script src="models/small-chicken.class.js" defer></script>
-<script src="models/endboss.class.js" defer></script>
-<script src="models/character.class.js" defer></script>
-<script src="models/throwable-object.class.js" defer></script>
-<script src="models/status.class.js" defer></script>
-<script src="models/boss-statusbar.class.js" defer></script>
-<script src="models/world.class.js" defer></script>
-<script src="js/levels/level1.js" defer></script>
-<script src="js/game.js" defer></script>
+  <script src="models/drawable-object.class.js" defer></script>
+  <script src="models/movable-object.class.js" defer></script>
+  <script src="models/keyboard.class.js" defer></script>
+  <script src="models/level.class.js" defer></script>
+  <script src="models/background-object.class.js" defer></script>
+  <script src="models/cloud.class.js" defer></script>
+  <script src="models/bottle.class.js" defer></script>
+  <script src="models/chicken.class.js" defer></script>
+  <script src="models/small-chicken.class.js" defer></script>
+  <script src="models/endboss.class.js" defer></script>
+  <script src="models/character.class.js" defer></script>
+  <script src="models/throwable-object.class.js" defer></script>
+  <script src="models/status.class.js" defer></script>
+  <script src="models/boss-statusbar.class.js" defer></script>
+  <script src="models/world.class.js" defer></script>
+  <script src="js/levels/level1.js" defer></script>
+  <script src="js/game.js" defer></script>
 </head>
 
 <body>
@@ -32,12 +32,23 @@
       <img src="img/9_intro_outro_screens/start/startscreen_1.png" alt="El Pollo Loco Startscreen">
       <button class="start-btn" onclick="startGame()">Start Game</button>
       <button class="info-btn" onclick="openInfo()">Info</button>
+      <button class="sound-btn" onclick="toggleSound()">Sound On</button>
     </div>
 
     <div id="game-container" class="d-none">
       <h1>El Pollo Loco</h1>
       <div class="canvas-wrapper">
         <canvas id="canvas" width="720" height="480"></canvas>
+
+        <div id="pauseScreen" class="d-none">
+          <div class="pause-box">
+            <h2>Pausiert</h2>
+            <button class="start-btn" onclick="resumeGame()">Weiter</button>
+            <button class="start-btn" onclick="restartGame()">Neustart</button>
+            <button class="start-btn" onclick="toggleSound()">Sound an/aus</button>
+            <button class="start-btn" onclick="goToHome()">Home</button>
+          </div>
+        </div>
 
         <div id="mobile-controls">
           <div class="mobile-left">
@@ -81,6 +92,8 @@
         <p>← → = Laufen</p>
         <p>Space = Springen</p>
         <p>D = Flasche werfen</p>
+        <p>ESC = Pause</p>
+        <p>M = Sound an/aus</p>
         <br>
         <p><strong>Mobil:</strong></p>
         <p>Linke Buttons = Laufen</p>

@@ -1,5 +1,8 @@
+/**
+ * Verwaltet die komplette Spielwelt.
+ * Hier werden Kollisionen, Gegner, Objekte und das Rendering gesteuert.
+ */
 class World {
-
     character = new Charackter();
     level = level1;
     throwableObjects = [];
@@ -16,7 +19,13 @@ class World {
     lastThrowTime = 0;
     gameOver = false;
     gameWon = false;
+    isPaused = false;
 
+    /**
+     * Erstellt eine neue Spielwelt.
+     * @param {HTMLCanvasElement} canvas
+     * @param {Keyboard} keyboard
+     */
     constructor(canvas, keyboard) {
         this.canvas = canvas;
         this.ctx = this.canvas.getContext('2d');
@@ -28,32 +37,39 @@ class World {
 
     setWorld() {
         this.character.world = this;
-
-        this.level.enemies.forEach(enemy => {
-            enemy.world = this;
-        });
+        this.level.enemies.forEach(enemy => enemy.world = this);
     }
 
     run() {
         setInterval(() => {
-            if (this.gameOver || this.gameWon) {
+            if (this.gameOver || this.gameWon || this.isPaused) {
                 return;
             }
 
-            this.checkBossBar();
-            this.checkCharacterEnemyCollisions();
-            this.checkBottleCollection();
-            this.checkCoinCollection();
-            this.checkThrowObjects();
-            this.checkThrowableObjectCollisions();
-            this.removeDeadEnemies();
-            this.checkGameOver();
-            this.checkGameWon();
+            this.updateWorld();
+        }, 1000 / 60);
+    }
 
-            this.statusBar.setPercentage(this.character.energy);
-            this.coinStatusBar.setPercentage(this.character.coins * 20);
-            this.bottleStatusBar.setPercentage(this.character.bottles * 20);
-        }, 100);
+    /**
+     * Aktualisiert die Spielwelt.
+     */
+    updateWorld() {
+        this.checkBossBar();
+        this.checkCharacterEnemyCollisions();
+        this.checkBottleCollection();
+        this.checkCoinCollection();
+        this.checkThrowObjects();
+        this.checkThrowableObjectCollisions();
+        this.removeDeadEnemies();
+        this.checkGameOver();
+        this.checkGameWon();
+        this.updateStatusBars();
+    }
+
+    updateStatusBars() {
+        this.statusBar.setPercentage(this.character.energy);
+        this.coinStatusBar.setPercentage(this.character.coins * 20);
+        this.bottleStatusBar.setPercentage(this.character.bottles * 20);
     }
 
     checkBossBar() {
@@ -66,6 +82,7 @@ class World {
         if (this.character.x > 1500) {
             this.bossBarVisible = true;
             boss.activated = true;
+            playBossMusic();
         }
 
         if (this.bossBarVisible) {
@@ -73,54 +90,83 @@ class World {
         }
     }
 
+    /**
+     * Prüft Kollisionen zwischen Charakter und Gegnern.
+     */
     checkCharacterEnemyCollisions() {
         this.level.enemies.forEach(enemy => {
             if (typeof enemy.isDead === 'function' && enemy.isDead()) {
                 return;
             }
 
-            if (enemy instanceof Endboss) {
-    this.handleBossCollision(enemy);
-} else if (this.character.isColliding(enemy)) {
-    if (this.characterIsAboveEnemy(enemy)) {
-                    if (typeof enemy.hit === 'function') {
-                        enemy.hit();
-                    }
-                    this.character.jump();
-                } else {
-                    this.character.hit();
-                    this.statusBar.setPercentage(this.character.energy);
-                }
-            }
+            this.handleEnemyCollision(enemy);
         });
     }
 
-   handleBossCollision(boss) {
-    if (!boss.attacking) {
-        return;
+    handleEnemyCollision(enemy) {
+        if (enemy instanceof Endboss) {
+            this.handleBossCollision(enemy);
+            return;
+        }
+
+        if (!this.character.isColliding(enemy)) {
+            return;
+        }
+
+        if (this.characterIsJumpingOnEnemy(enemy)) {
+            this.killEnemyFromTop(enemy);
+            return;
+        }
+
+        this.damageCharacter();
     }
 
-    if (!boss.characterInAttackRange(this.character)) {
-        return;
+    characterIsJumpingOnEnemy(enemy) {
+        const characterBottom = this.character.y + this.character.height;
+        const enemyTop = enemy.y + 20;
+        const isFalling = this.character.speedY < 0;
+
+        return isFalling && characterBottom <= enemyTop + 25;
     }
 
-    if (this.character.isHurt()) {
-        return;
+    killEnemyFromTop(enemy) {
+        if (typeof enemy.hit === 'function') {
+            enemy.hit();
+            playChickenSound();
+        }
+
+        this.character.y = enemy.y - this.character.height + 20;
+        this.character.jump();
     }
 
-    this.character.hit();
-    this.statusBar.setPercentage(this.character.energy);
-
-    if (this.character.x < boss.x) {
-        this.character.x -= 40;
-    } else {
-        this.character.x += 40;
+    damageCharacter() {
+        this.character.hit();
+        this.statusBar.setPercentage(this.character.energy);
     }
-}
 
-    characterIsAboveEnemy(enemy) {
-        return this.character.speedY < 0 &&
-            this.character.y + this.character.height < enemy.y + 40;
+    handleBossCollision(boss) {
+        if (!boss.attacking) {
+            return;
+        }
+
+        if (!boss.characterInAttackRange(this.character)) {
+            return;
+        }
+
+        if (this.character.isHurt()) {
+            return;
+        }
+
+        this.damageCharacter();
+        this.pushCharacterBack(boss);
+    }
+
+    pushCharacterBack(boss) {
+        if (this.character.x < boss.x) {
+            this.character.x -= 40;
+        } else {
+            this.character.x += 40;
+        }
     }
 
     checkBottleCollection() {
@@ -133,6 +179,7 @@ class World {
                 this.character.collectBottle();
                 return false;
             }
+
             return true;
         });
     }
@@ -147,6 +194,7 @@ class World {
                 this.character.collectCoin();
                 return false;
             }
+
             return true;
         });
     }
@@ -154,17 +202,28 @@ class World {
     checkThrowObjects() {
         const now = Date.now();
 
-        if (this.keyboard.throw && this.character.canThrowBottle() && now - this.lastThrowTime > 500) {
-            const bottle = new ThrowableObject(
-                this.character.x + this.character.width / 2,
-                this.character.y + 100,
-                this.character.otherdirection
-            );
-
-            this.throwableObjects.push(bottle);
-            this.character.useBottle();
+        if (
+            this.keyboard.throw &&
+            this.character.canThrowBottle() &&
+            now - this.lastThrowTime > 500
+        ) {
+            this.throwBottle();
             this.lastThrowTime = now;
         }
+    }
+
+    /**
+     * Erstellt eine geworfene Flasche des Spielers.
+     */
+    throwBottle() {
+        const bottle = new ThrowableObject(
+            this.character.x + this.character.width / 2,
+            this.character.y + 20,
+            this.character.otherdirection
+        );
+
+        this.throwableObjects.push(bottle);
+        this.character.useBottle();
     }
 
     checkThrowableObjectCollisions() {
@@ -173,56 +232,49 @@ class World {
                 return;
             }
 
-            this.level.enemies.forEach(enemy => {
+            for (let i = 0; i < this.level.enemies.length; i++) {
+                const enemy = this.level.enemies[i];
+
                 if (typeof enemy.isDead === 'function' && enemy.isDead()) {
-                    return;
+                    continue;
                 }
 
-                if (bottle.isColliding(enemy)) {
+                if (bottle.isColliding(enemy) && !bottle.hasHit) {
                     bottle.splash();
 
                     if (typeof enemy.hit === 'function') {
                         enemy.hit();
-                    } else if (enemy.energy !== undefined) {
-                        enemy.energy -= 20;
-
-                        if (enemy.energy < 0) {
-                            enemy.energy = 0;
-                        }
                     }
+
+                    break;
                 }
-            });
+            }
         });
 
         this.throwableObjects = this.throwableObjects.filter(bottle => !bottle.removeFromWorld);
     }
 
     checkGameOver() {
-        if (typeof this.character.isDead === 'function' && this.character.isDead()) {
-            this.gameOver = true;
-            this.stopGame();
-
-            setTimeout(() => {
-                showGameOverScreen();
-            }, 1000);
+        if (!this.character.isDead()) {
+            return;
         }
+
+        this.gameOver = true;
+        this.stopGame();
+        setTimeout(() => showGameOverScreen(), 1000);
     }
 
     checkGameWon() {
         const boss = this.level.enemies.find(enemy => enemy instanceof Endboss);
 
-        if (!boss) {
+        if (!boss || !boss.isDead()) {
             return;
         }
 
-        if (typeof boss.isDead === 'function' && boss.isDead()) {
-            const timePassed = Date.now() - boss.deadTime;
-
-            if (timePassed > 1000) {
-                this.gameWon = true;
-                this.stopGame();
-                showYouWinScreen();
-            }
+        if (Date.now() - boss.deadTime > 1000) {
+            this.gameWon = true;
+            this.stopGame();
+            showYouWinScreen();
         }
     }
 
@@ -237,19 +289,29 @@ class World {
 
     removeDeadEnemies() {
         this.level.enemies = this.level.enemies.filter(enemy => {
-            if (enemy instanceof Endboss) {
-                return true;
-            }
-
-            if (typeof enemy.isDead === 'function' && enemy.isDead()) {
-                const timePassed = Date.now() - enemy.deadTime;
-                return timePassed < 800;
-            }
-
-            return true;
+            return this.shouldKeepEnemy(enemy);
         });
     }
 
+    shouldKeepEnemy(enemy) {
+        if (enemy instanceof Endboss) {
+            return true;
+        }
+
+        if (typeof enemy.isDead !== 'function') {
+            return true;
+        }
+
+        if (!enemy.isDead()) {
+            return true;
+        }
+
+        return Date.now() - enemy.deadTime < 800;
+    }
+
+    /**
+     * Zeichnet alle Spielobjekte auf das Canvas.
+     */
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 

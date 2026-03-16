@@ -17,44 +17,85 @@ class Chicken extends MovableObject {
         'img/3_enemies_chicken/chicken_normal/2_dead/dead.png'
     ];
 
+    /**
+     * Erstellt ein normales Huhn.
+     * @param {number} x - Startposition auf der X-Achse.
+     */
     constructor(x) {
         super();
         this.loadImage(this.images_walking[0]);
         this.loadImages(this.images_walking);
         this.loadImages(this.IMAGES_DEAD);
-
         this.x = x;
         this.speed = 0.2 + Math.random() * 0.25;
         this.otherdirection = false;
-
         this.animate();
     }
 
+    /**
+     * Startet Bewegung und Animation.
+     */
     animate() {
+
         setInterval(() => {
-            if (!this.isDead()) {
-                this.x -= this.speed;
-                this.otherdirection = false;
-            }
+            if (worldObj && worldObj.isPaused) return;
+            this.handleMovement();
         }, 1000 / 60);
 
         setInterval(() => {
-            if (this.isDead()) {
-                this.img = this.imageCache[this.IMAGES_DEAD[0]];
-            } else {
-                this.playAnimation(this.images_walking);
-            }
+            if (worldObj && worldObj.isPaused) return;
+            this.handleAnimation();
         }, 200);
     }
 
-    hit() {
-        if (this.isDead()) return;
+    /**
+     * Bewegt das Huhn nach links.
+     */
+    handleMovement() {
+        if (this.isDead()) {
+            return;
+        }
 
-        this.energy = 0;
-        this.deadTime = new Date().getTime();
+        this.x -= this.speed;
+        this.otherdirection = false;
     }
 
+    /**
+     * Spielt die passende Animation ab.
+     */
+    handleAnimation() {
+        if (this.isDead()) {
+            this.showDeadImage();
+            return;
+        }
+
+        this.playAnimation(this.images_walking);
+    }
+
+    /**
+     * Zeigt das tote Huhn an.
+     */
+    showDeadImage() {
+        this.img = this.imageCache[this.IMAGES_DEAD[0]];
+    }
+
+    /**
+     * Tötet das Huhn.
+     */
+    hit() {
+        if (this.isDead()) {
+            return;
+        }
+
+        this.energy = 0;
+        this.deadTime = Date.now();
+    }
+
+    /**
+     * Prüft, ob das Huhn tot ist.
+     * @returns {boolean}
+     */
     isDead() {
-        return this.energy == 0;
+        return this.energy === 0;
     }
 }

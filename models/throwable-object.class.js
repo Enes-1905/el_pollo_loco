@@ -1,20 +1,12 @@
 class ThrowableObject extends MovableObject {
-
-    width = 60;
-    height = 80;
-    hasHit = false;
-    removeFromWorld = false;
-    throwInterval = null;
-    rotationInterval = null;
-
-    IMAGES_ROTATION = [
+    IMAGES_BOTTLE_ROTATION = [
         'img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png',
         'img/6_salsa_bottle/bottle_rotation/2_bottle_rotation.png',
         'img/6_salsa_bottle/bottle_rotation/3_bottle_rotation.png',
         'img/6_salsa_bottle/bottle_rotation/4_bottle_rotation.png'
     ];
 
-    IMAGES_SPLASH = [
+    IMAGES_BOTTLE_SPLASH = [
         'img/6_salsa_bottle/bottle_rotation/bottle_splash/1_bottle_splash.png',
         'img/6_salsa_bottle/bottle_rotation/bottle_splash/2_bottle_splash.png',
         'img/6_salsa_bottle/bottle_rotation/bottle_splash/3_bottle_splash.png',
@@ -23,44 +15,59 @@ class ThrowableObject extends MovableObject {
         'img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png'
     ];
 
-    constructor(x, y, throwToLeft = false) {
+    hasHit = false;
+    removeFromWorld = false;
+    throwInterval = null;
+    splashInterval = null;
+    throwStartX = 0;
+
+    constructor(x, y, otherdirection = false) {
         super();
+        this.loadImage('img/6_salsa_bottle/salsa_bottle.png');
+        this.loadImages(this.IMAGES_BOTTLE_ROTATION);
+        this.loadImages(this.IMAGES_BOTTLE_SPLASH);
+
         this.x = x;
         this.y = y;
-        this.otherdirection = throwToLeft;
+        this.width = 60;
+        this.height = 70;
+        this.otherdirection = otherdirection;
+        this.throwStartX = x;
 
-        this.loadImage(this.IMAGES_ROTATION[0]);
-        this.loadImages(this.IMAGES_ROTATION);
-        this.loadImages(this.IMAGES_SPLASH);
-
-        this.throw(throwToLeft);
+        this.throw();
     }
 
-    throw(throwToLeft) {
-        this.speedY = 22;
+    getGroundY() {
+        return 360;
+    }
+
+    throw() {
+        this.speedY = 20;
         this.applyGravity();
 
         this.throwInterval = setInterval(() => {
+            if (worldObj && worldObj.isPaused) return;
+
             if (this.hasHit) {
-                clearInterval(this.throwInterval);
                 return;
             }
 
-            if (throwToLeft) {
-                this.x -= 10;
+            if (this.otherdirection) {
+                this.x -= 7;
             } else {
-                this.x += 10;
-            }
-        }, 1000 / 60);
-
-        this.rotationInterval = setInterval(() => {
-            if (this.hasHit) {
-                clearInterval(this.rotationInterval);
-                return;
+                this.x += 7;
             }
 
-            this.playAnimation(this.IMAGES_ROTATION);
-        }, 100);
+            this.playAnimation(this.IMAGES_BOTTLE_ROTATION);
+
+            if (Math.abs(this.x - this.throwStartX) > 320) {
+                this.splash();
+            }
+
+            if (this.y >= this.getGroundY()) {
+                this.splash();
+            }
+        }, 25);
     }
 
     splash() {
@@ -69,29 +76,30 @@ class ThrowableObject extends MovableObject {
         }
 
         this.hasHit = true;
+        this.stopGravity();
 
         if (this.throwInterval) {
             clearInterval(this.throwInterval);
+            this.throwInterval = null;
         }
 
-        if (this.rotationInterval) {
-            clearInterval(this.rotationInterval);
-        }
+        this.speedY = 0;
+        this.currentImage = 0;
 
-        let splashIndex = 0;
+        let splashFrame = 0;
 
-        const splashInterval = setInterval(() => {
-            if (splashIndex < this.IMAGES_SPLASH.length) {
-                this.img = this.imageCache[this.IMAGES_SPLASH[splashIndex]];
-                splashIndex++;
+        this.splashInterval = setInterval(() => {
+            if (worldObj && worldObj.isPaused) return;
+
+            if (splashFrame < this.IMAGES_BOTTLE_SPLASH.length) {
+                let path = this.IMAGES_BOTTLE_SPLASH[splashFrame];
+                this.img = this.imageCache[path];
+                splashFrame++;
             } else {
-                clearInterval(splashInterval);
+                clearInterval(this.splashInterval);
+                this.splashInterval = null;
                 this.removeFromWorld = true;
             }
-        }, 80);
-    }
-
-    isAboveGround() {
-        return this.y < 360 && !this.hasHit;
+        }, 50);
     }
 }
