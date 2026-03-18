@@ -192,13 +192,13 @@ class Endboss extends MovableObject {
     }
 
     getAttackHitbox() {
-        let hitboxWidth = 95;
-        let hitboxHeight = 115;
-        let hitboxY = this.y + 190;
+        let hitboxWidth = 80;
+        let hitboxHeight = 105;
+        let hitboxY = this.y + 200;
 
         if (this.otherdirection) {
             return {
-                x: this.x + this.width - 10,
+                x: this.x + this.width - 5,
                 y: hitboxY,
                 width: hitboxWidth,
                 height: hitboxHeight
@@ -206,7 +206,7 @@ class Endboss extends MovableObject {
         }
 
         return {
-            x: this.x - 45,
+            x: this.x - 30,
             y: hitboxY,
             width: hitboxWidth,
             height: hitboxHeight
@@ -215,10 +215,10 @@ class Endboss extends MovableObject {
 
     getBodyHitbox() {
         return {
-            x: this.x + 90,
-            y: this.y + 225,
-            width: this.width - 180,
-            height: 95
+            x: this.x + 105,
+            y: this.y + 235,
+            width: this.width - 210,
+            height: 80
         };
     }
 

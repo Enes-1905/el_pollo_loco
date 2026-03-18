@@ -66,6 +66,7 @@ function goToHome() {
     hideAllScreens();
     hidePauseScreen();
     stopAllSounds();
+    showLegalLinks();
     document.getElementById('startscreen').classList.remove('d-none');
     updateSoundButton();
 }
@@ -84,12 +85,14 @@ function hideEndScreens() {
 
 function showGameContainer() {
     document.getElementById('game-container').classList.remove('d-none');
+    hideLegalLinks();
 }
 
 function showGameOverScreen() {
     document.getElementById('game-container').classList.add('d-none');
     hidePauseScreen();
     stopGameplaySounds();
+    showLegalLinks();
     document.getElementById('game-over-screen').classList.remove('d-none');
     playLoseSound();
 }
@@ -98,8 +101,29 @@ function showYouWinScreen() {
     document.getElementById('game-container').classList.add('d-none');
     hidePauseScreen();
     stopGameplaySounds();
+    showLegalLinks();
     document.getElementById('you-win-screen').classList.remove('d-none');
     playWinSound();
+}
+
+function hideLegalLinks() {
+    const legal = document.querySelector('.legal-links');
+
+    if (!legal) {
+        return;
+    }
+
+    legal.style.display = 'none';
+}
+
+function showLegalLinks() {
+    const legal = document.querySelector('.legal-links');
+
+    if (!legal) {
+        return;
+    }
+
+    legal.style.display = 'flex';
 }
 
 function resetKeyboard() {
@@ -395,5 +419,6 @@ function addTouchButton(buttonId, keyName) {
 window.addEventListener('DOMContentLoaded', () => {
     loadSoundSetting();
     updateSoundButton();
+    showLegalLinks();
     addTouchControls();
 });
