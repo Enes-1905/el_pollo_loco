@@ -163,9 +163,9 @@ class World {
 
     pushCharacterBack(boss) {
         if (this.character.x < boss.x) {
-            this.character.x -= 40;
+            this.character.x -= 45;
         } else {
-            this.character.x += 40;
+            this.character.x += 45;
         }
     }
 
@@ -177,6 +177,7 @@ class World {
         this.level.bottles = this.level.bottles.filter(bottle => {
             if (this.character.isColliding(bottle)) {
                 this.character.collectBottle();
+                playBottleCollectSound();
                 return false;
             }
 
@@ -192,6 +193,7 @@ class World {
         this.level.coins = this.level.coins.filter(coin => {
             if (this.character.isColliding(coin)) {
                 this.character.collectCoin();
+                playCoinSound();
                 return false;
             }
 

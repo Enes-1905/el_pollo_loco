@@ -78,6 +78,10 @@ class ThrowableObject extends MovableObject {
         this.hasHit = true;
         this.stopGravity();
 
+        if (typeof playBottleHitSound === 'function') {
+            playBottleHitSound();
+        }
+
         if (this.throwInterval) {
             clearInterval(this.throwInterval);
             this.throwInterval = null;

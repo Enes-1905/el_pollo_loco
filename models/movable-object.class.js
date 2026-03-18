@@ -110,10 +110,26 @@ class MovableObject extends DrawableObject {
     }
 
     isColliding(mo) {
-        return this.x + this.width > mo.x &&
-            this.y + this.height > mo.y &&
-            this.x < mo.x + mo.width &&
-            this.y < mo.y + mo.height;
+        return this.getHitboxRight() > mo.getHitboxLeft() &&
+            this.getHitboxBottom() > mo.getHitboxTop() &&
+            this.getHitboxLeft() < mo.getHitboxRight() &&
+            this.getHitboxTop() < mo.getHitboxBottom();
+    }
+
+    getHitboxLeft() {
+        return this.x + this.offset.left;
+    }
+
+    getHitboxRight() {
+        return this.x + this.width - this.offset.right;
+    }
+
+    getHitboxTop() {
+        return this.y + this.offset.top;
+    }
+
+    getHitboxBottom() {
+        return this.y + this.height - this.offset.bottom;
     }
 
     hit() {

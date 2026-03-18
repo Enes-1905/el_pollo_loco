@@ -5,6 +5,12 @@ class SmallChicken extends MovableObject {
     width = 60;
     energy = 20;
     deadTime = 0;
+    offset = {
+        top: 6,
+        right: 8,
+        bottom: 6,
+        left: 8
+    };
 
     images_walking = [
         'img/3_enemies_chicken/chicken_small/1_walk/1_w.png',
@@ -35,7 +41,6 @@ class SmallChicken extends MovableObject {
      * Startet Bewegung und Animation.
      */
     animate() {
-
         setInterval(() => {
             if (worldObj && worldObj.isPaused) return;
             this.handleMovement();

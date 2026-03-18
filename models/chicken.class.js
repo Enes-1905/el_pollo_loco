@@ -6,6 +6,12 @@ class Chicken extends MovableObject {
     energy = 20;
     isDeadChicken = false;
     deadTime = 0;
+    offset = {
+        top: 8,
+        right: 10,
+        bottom: 8,
+        left: 10
+    };
 
     images_walking = [
         'img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
@@ -36,7 +42,6 @@ class Chicken extends MovableObject {
      * Startet Bewegung und Animation.
      */
     animate() {
-
         setInterval(() => {
             if (worldObj && worldObj.isPaused) return;
             this.handleMovement();

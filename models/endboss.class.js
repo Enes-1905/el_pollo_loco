@@ -6,12 +6,19 @@ class Endboss extends MovableObject {
     energy = 80;
     lastHit = 0;
     deadTime = 0;
-    speed = 3;
+    speed = 3.2;
     activated = false;
-    attackRange = 200;
+    attackRange = 210;
     lastAttack = 0;
-    attackCooldown = 1200;
+    attackCooldown = 1100;
     attacking = false;
+
+    offset = {
+        top: 80,
+        right: 30,
+        bottom: 25,
+        left: 30
+    };
 
     IMAGES_WALK = [
         'img/4_enemie_boss_chicken/1_walk/G1.png',
@@ -91,13 +98,11 @@ class Endboss extends MovableObject {
             return;
         }
 
-        let characterX = this.world.character.x;
-        let distance = this.x - characterX;
+        let characterCenter = this.world.character.x + this.world.character.width / 2;
+        let bossCenter = this.x + this.width / 2;
+        let distance = bossCenter - characterCenter;
 
-        if (Math.abs(distance) > this.attackRange && !this.attacking) {
-            this.followCharacter(characterX);
-            return;
-        }
+        this.followCharacter(characterCenter);
 
         if (Math.abs(distance) <= this.attackRange && this.canAttack()) {
             this.startAttack();
@@ -128,8 +133,15 @@ class Endboss extends MovableObject {
         this.playAnimation(this.IMAGES_ALERT);
     }
 
-    followCharacter(characterX) {
-        if (characterX < this.x) {
+    followCharacter(characterCenter) {
+        let bossCenter = this.x + this.width / 2;
+        let distance = bossCenter - characterCenter;
+
+        if (Math.abs(distance) < 15) {
+            return;
+        }
+
+        if (characterCenter < bossCenter) {
             this.moveLeft();
             this.otherdirection = false;
             return;
@@ -152,8 +164,11 @@ class Endboss extends MovableObject {
             return false;
         }
 
-        let distance = this.x - this.world.character.x;
-        return Math.abs(distance) > this.attackRange;
+        let characterCenter = this.world.character.x + this.world.character.width / 2;
+        let bossCenter = this.x + this.width / 2;
+        let distance = bossCenter - characterCenter;
+
+        return Math.abs(distance) > 15;
     }
 
     canAttack() {
@@ -164,20 +179,26 @@ class Endboss extends MovableObject {
         this.attacking = true;
         this.lastAttack = Date.now();
 
+        if (this.world && this.world.character.x < this.x) {
+            this.otherdirection = false;
+        } else {
+            this.otherdirection = true;
+        }
+
         setTimeout(() => {
             if (worldObj && worldObj.isPaused) return;
             this.attacking = false;
-        }, 700);
+        }, 650);
     }
 
     getAttackHitbox() {
-        let hitboxWidth = 120;
-        let hitboxHeight = 140;
-        let hitboxY = this.y + 170;
+        let hitboxWidth = 95;
+        let hitboxHeight = 115;
+        let hitboxY = this.y + 190;
 
         if (this.otherdirection) {
             return {
-                x: this.x + this.width - 40,
+                x: this.x + this.width - 10,
                 y: hitboxY,
                 width: hitboxWidth,
                 height: hitboxHeight
@@ -185,20 +206,35 @@ class Endboss extends MovableObject {
         }
 
         return {
-            x: this.x - 30,
+            x: this.x - 45,
             y: hitboxY,
             width: hitboxWidth,
             height: hitboxHeight
         };
     }
 
-    characterInAttackRange(character) {
-        let hitbox = this.getAttackHitbox();
+    getBodyHitbox() {
+        return {
+            x: this.x + 90,
+            y: this.y + 225,
+            width: this.width - 180,
+            height: 95
+        };
+    }
 
-        return character.x + character.width > hitbox.x &&
-            character.y + character.height > hitbox.y &&
-            character.x < hitbox.x + hitbox.width &&
-            character.y < hitbox.y + hitbox.height;
+    isCharacterInsideHitbox(character, hitbox) {
+        return character.getHitboxRight() > hitbox.x &&
+            character.getHitboxBottom() > hitbox.y &&
+            character.getHitboxLeft() < hitbox.x + hitbox.width &&
+            character.getHitboxTop() < hitbox.y + hitbox.height;
+    }
+
+    characterInAttackRange(character) {
+        let attackHitbox = this.getAttackHitbox();
+        let bodyHitbox = this.getBodyHitbox();
+
+        return this.isCharacterInsideHitbox(character, attackHitbox) ||
+            this.isCharacterInsideHitbox(character, bodyHitbox);
     }
 
     hit() {

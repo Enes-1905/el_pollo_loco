@@ -7,23 +7,40 @@ let bossMusicStarted = false;
 let gameSounds = {
     bgMusic: new Audio('audio/background.mp3'),
     bossMusic: new Audio('audio/boss.mp3'),
-    chicken: new Audio('audio/chicken.mp3')
+    chicken: new Audio('audio/chicken.mp3'),
+    coin: new Audio('audio/coinsammeln.mp3'),
+    bottleCollect: new Audio('audio/flaschesammeln.mp3'),
+    bottleHit: new Audio('audio/flascheaufgegner.mp3'),
+    win: new Audio('audio/win.mp3'),
+    lose: new Audio('audio/youlose.mp3'),
+    running: new Audio('audio/running.mp3')
 };
 
 function init() {
     initLevel();
     canvas = document.getElementById('canvas');
     worldObj = new World(canvas, keyboard);
+    loadSoundSetting();
     prepareSounds();
     updateSoundButton();
 }
 
 function prepareSounds() {
     gameSounds.bgMusic.loop = true;
-    gameSounds.bgMusic.volume = 0.2;
+    gameSounds.bgMusic.volume = 0.12;
+
     gameSounds.bossMusic.loop = true;
-    gameSounds.bossMusic.volume = 0.25;
-    gameSounds.chicken.volume = 0.4;
+    gameSounds.bossMusic.volume = 0.18;
+
+    gameSounds.running.loop = true;
+    gameSounds.running.volume = 0.3;
+
+    gameSounds.chicken.volume = 0.35;
+    gameSounds.coin.volume = 0.4;
+    gameSounds.bottleCollect.volume = 0.4;
+    gameSounds.bottleHit.volume = 0.45;
+    gameSounds.win.volume = 0.45;
+    gameSounds.lose.volume = 0.45;
 }
 
 function startGame() {
@@ -72,15 +89,17 @@ function showGameContainer() {
 function showGameOverScreen() {
     document.getElementById('game-container').classList.add('d-none');
     hidePauseScreen();
+    stopGameplaySounds();
     document.getElementById('game-over-screen').classList.remove('d-none');
-    stopAllSounds();
+    playLoseSound();
 }
 
 function showYouWinScreen() {
     document.getElementById('game-container').classList.add('d-none');
     hidePauseScreen();
+    stopGameplaySounds();
     document.getElementById('you-win-screen').classList.remove('d-none');
-    stopAllSounds();
+    playWinSound();
 }
 
 function resetKeyboard() {
@@ -118,7 +137,7 @@ function playBackgroundMusic() {
     gameSounds.bgMusic.pause();
     gameSounds.bossMusic.pause();
     gameSounds.bgMusic.currentTime = 0;
-    gameSounds.bgMusic.play().catch(() => {});
+    gameSounds.bgMusic.play().catch(() => { });
 }
 
 function stopBackgroundMusic() {
@@ -132,8 +151,9 @@ function playBossMusic() {
     }
 
     stopBackgroundMusic();
+    stopRunningSound();
     gameSounds.bossMusic.currentTime = 0;
-    gameSounds.bossMusic.play().catch(() => {});
+    gameSounds.bossMusic.play().catch(() => { });
     bossMusicStarted = true;
 }
 
@@ -141,7 +161,76 @@ function playChickenSound() {
     playSound(gameSounds.chicken);
 }
 
+function playCoinSound() {
+    playSound(gameSounds.coin);
+}
+
+function playBottleCollectSound() {
+    playSound(gameSounds.bottleCollect);
+}
+
+function playBottleHitSound() {
+    playSound(gameSounds.bottleHit);
+}
+
+function playWinSound() {
+    playSound(gameSounds.win);
+}
+
+function playLoseSound() {
+    playSound(gameSounds.lose);
+}
+
+function playRunningSound() {
+    if (soundMuted) {
+        return;
+    }
+
+    if (!gameSounds.running.paused) {
+        return;
+    }
+
+    gameSounds.running.currentTime = 0;
+    gameSounds.running.play().catch(() => { });
+}
+
+function stopRunningSound() {
+    gameSounds.running.pause();
+    gameSounds.running.currentTime = 0;
+}
+
+function stopCharacterSounds() {
+    if (!worldObj || !worldObj.character) {
+        return;
+    }
+
+    if (typeof worldObj.character.stopSleepSound === 'function') {
+        worldObj.character.stopSleepSound();
+    }
+}
+
+function stopGameplaySounds() {
+    stopCharacterSounds();
+
+    gameSounds.bgMusic.pause();
+    gameSounds.bgMusic.currentTime = 0;
+    gameSounds.bossMusic.pause();
+    gameSounds.bossMusic.currentTime = 0;
+    gameSounds.chicken.pause();
+    gameSounds.chicken.currentTime = 0;
+    gameSounds.coin.pause();
+    gameSounds.coin.currentTime = 0;
+    gameSounds.bottleCollect.pause();
+    gameSounds.bottleCollect.currentTime = 0;
+    gameSounds.bottleHit.pause();
+    gameSounds.bottleHit.currentTime = 0;
+    gameSounds.running.pause();
+    gameSounds.running.currentTime = 0;
+}
+
 function stopAllSounds() {
+    stopCharacterSounds();
+
     Object.values(gameSounds).forEach(sound => {
         sound.pause();
         sound.currentTime = 0;
@@ -154,11 +243,12 @@ function playSound(sound) {
     }
 
     sound.currentTime = 0;
-    sound.play().catch(() => {});
+    sound.play().catch(() => { });
 }
 
 function toggleSound() {
     soundMuted = !soundMuted;
+    saveSoundSetting();
     updateSoundButton();
 
     if (soundMuted) {
@@ -167,7 +257,7 @@ function toggleSound() {
     }
 
     if (bossMusicStarted) {
-        gameSounds.bossMusic.play().catch(() => {});
+        gameSounds.bossMusic.play().catch(() => { });
         return;
     }
 
@@ -175,17 +265,26 @@ function toggleSound() {
 }
 
 function updateSoundButton() {
-    let button = document.querySelector('.sound-btn');
+    const buttons = document.querySelectorAll('button[onclick="toggleSound()"]');
 
-    if (!button) {
+    buttons.forEach(button => {
+        button.textContent = soundMuted ? 'Sound Off' : 'Sound On';
+    });
+}
+
+function saveSoundSetting() {
+    localStorage.setItem('soundMuted', JSON.stringify(soundMuted));
+}
+
+function loadSoundSetting() {
+    const savedValue = localStorage.getItem('soundMuted');
+
+    if (savedValue === null) {
+        soundMuted = false;
         return;
     }
 
-    if (soundMuted) {
-        button.textContent = 'Sound Off';
-    } else {
-        button.textContent = 'Sound On';
-    }
+    soundMuted = JSON.parse(savedValue);
 }
 
 function showPauseScreen() {
@@ -195,6 +294,7 @@ function showPauseScreen() {
         return;
     }
 
+    stopRunningSound();
     pauseScreen.classList.remove('d-none');
 }
 
@@ -284,6 +384,7 @@ function addTouchButton(buttonId, keyName) {
     button.addEventListener('touchend', (e) => {
         e.preventDefault();
         keyboard[keyName] = false;
+        stopRunningSound();
     });
 
     button.addEventListener('contextmenu', (e) => {
@@ -291,4 +392,8 @@ function addTouchButton(buttonId, keyName) {
     });
 }
 
-addTouchControls();
+window.addEventListener('DOMContentLoaded', () => {
+    loadSoundSetting();
+    updateSoundButton();
+    addTouchControls();
+});

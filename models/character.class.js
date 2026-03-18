@@ -9,6 +9,16 @@ class Charackter extends MovableObject {
     bottles = 0;
     coins = 0;
     lastAction = Date.now();
+    sleepSoundPlayed = false;
+
+    sleep_sound = new Audio('audio/sleep.mp3');
+
+    offset = {
+        top: 110,
+        right: 30,
+        bottom: 15,
+        left: 30
+    };
 
     IMAGES_IDLE = [
         'img/2_character_pepe/1_idle/idle/I-1.png',
@@ -91,6 +101,7 @@ class Charackter extends MovableObject {
     constructor() {
         super();
         this.loadCharacterImages();
+        this.prepareSleepSound();
         this.applyGravity();
         this.animate();
     }
@@ -104,6 +115,11 @@ class Charackter extends MovableObject {
         this.loadImages(this.IMAGES_DEAD);
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.BOTTLE_IMAGES);
+    }
+
+    prepareSleepSound() {
+        this.sleep_sound.volume = 0.35;
+        this.sleep_sound.loop = false;
     }
 
     animate() {
@@ -120,6 +136,7 @@ class Charackter extends MovableObject {
 
     handleMovement() {
         if (!this.world || this.isDead()) {
+            stopRunningSound();
             return;
         }
 
@@ -128,11 +145,14 @@ class Charackter extends MovableObject {
         this.handleWalkLeft();
         this.handleJump();
         this.updateCamera();
+        this.handleRunningSound();
     }
 
     updateLastAction() {
         if (this.isDoingSomething()) {
             this.lastAction = Date.now();
+            this.stopSleepSound();
+            this.sleepSoundPlayed = false;
         }
     }
 
@@ -155,6 +175,19 @@ class Charackter extends MovableObject {
 
         if (jumpPressed && !this.isAboveGround()) {
             this.jump();
+        }
+    }
+
+    handleRunningSound() {
+        if (this.isAboveGround()) {
+            stopRunningSound();
+            return;
+        }
+
+        if (this.world.keyboard.right || this.world.keyboard.left) {
+            playRunningSound();
+        } else {
+            stopRunningSound();
         }
     }
 
@@ -186,31 +219,56 @@ class Charackter extends MovableObject {
         }
 
         if (this.isDead()) {
+            stopRunningSound();
+            this.stopSleepSound();
             this.playAnimation(this.IMAGES_DEAD);
             return;
         }
 
         if (this.isHurt()) {
+            this.stopSleepSound();
             this.playAnimation(this.IMAGES_HURT);
             return;
         }
 
         if (this.isAboveGround()) {
+            this.stopSleepSound();
+            this.sleepSoundPlayed = false;
             this.playAnimation(this.images_jumping);
             return;
         }
 
         if (this.isWalking()) {
+            this.stopSleepSound();
+            this.sleepSoundPlayed = false;
             this.playAnimation(this.images_walking);
             return;
         }
 
         if (this.isSleeping()) {
             this.playAnimation(this.IMAGES_LONG_IDLE);
+            this.playSleepSoundOnce();
             return;
         }
 
+        this.stopSleepSound();
+        this.sleepSoundPlayed = false;
         this.playAnimation(this.IMAGES_IDLE);
+    }
+
+    playSleepSoundOnce() {
+        if (soundMuted || this.sleepSoundPlayed) {
+            return;
+        }
+
+        this.sleep_sound.currentTime = 0;
+        this.sleep_sound.play().catch(() => {});
+        this.sleepSoundPlayed = true;
+    }
+
+    stopSleepSound() {
+        this.sleep_sound.pause();
+        this.sleep_sound.currentTime = 0;
     }
 
     isWalking() {
@@ -233,6 +291,9 @@ class Charackter extends MovableObject {
     jump() {
         this.speedY = 22;
         this.lastAction = Date.now();
+        stopRunningSound();
+        this.stopSleepSound();
+        this.sleepSoundPlayed = false;
     }
 
     hit() {
@@ -248,6 +309,9 @@ class Charackter extends MovableObject {
 
         this.lastHit = Date.now();
         this.lastAction = Date.now();
+        stopRunningSound();
+        this.stopSleepSound();
+        this.sleepSoundPlayed = false;
     }
 
     isHurt() {
@@ -263,6 +327,8 @@ class Charackter extends MovableObject {
     collectBottle() {
         this.bottles += 1;
         this.lastAction = Date.now();
+        this.stopSleepSound();
+        this.sleepSoundPlayed = false;
     }
 
     collectCoin() {
@@ -271,6 +337,8 @@ class Charackter extends MovableObject {
         }
 
         this.lastAction = Date.now();
+        this.stopSleepSound();
+        this.sleepSoundPlayed = false;
     }
 
     canThrowBottle() {
@@ -283,5 +351,7 @@ class Charackter extends MovableObject {
         }
 
         this.lastAction = Date.now();
+        this.stopSleepSound();
+        this.sleepSoundPlayed = false;
     }
 }
