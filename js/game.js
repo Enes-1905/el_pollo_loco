@@ -86,6 +86,7 @@ function hideEndScreens() {
 function showGameContainer() {
     document.getElementById('game-container').classList.remove('d-none');
     hideLegalLinks();
+    updateSoundButton();
 }
 
 function showGameOverScreen() {
@@ -94,6 +95,7 @@ function showGameOverScreen() {
     stopGameplaySounds();
     showLegalLinks();
     document.getElementById('game-over-screen').classList.remove('d-none');
+    updateSoundButton();
     playLoseSound();
 }
 
@@ -103,6 +105,7 @@ function showYouWinScreen() {
     stopGameplaySounds();
     showLegalLinks();
     document.getElementById('you-win-screen').classList.remove('d-none');
+    updateSoundButton();
     playWinSound();
 }
 
@@ -153,6 +156,30 @@ function hideInfo() {
     document.getElementById('info-overlay').classList.add('d-none');
 }
 
+function handleAudioError(error, soundName) {
+    if (!error) {
+        return;
+    }
+
+    if (error.name === 'AbortError') {
+        return;
+    }
+
+    console.warn('Audio error:', soundName, error);
+}
+
+function tryPlayAudio(audio, soundName) {
+    if (!audio) {
+        return;
+    }
+
+    const playPromise = audio.play();
+
+    if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(error => handleAudioError(error, soundName));
+    }
+}
+
 function playBackgroundMusic() {
     if (soundMuted) {
         return;
@@ -161,7 +188,7 @@ function playBackgroundMusic() {
     gameSounds.bgMusic.pause();
     gameSounds.bossMusic.pause();
     gameSounds.bgMusic.currentTime = 0;
-    gameSounds.bgMusic.play().catch(() => { });
+    tryPlayAudio(gameSounds.bgMusic, 'background music');
 }
 
 function stopBackgroundMusic() {
@@ -177,32 +204,32 @@ function playBossMusic() {
     stopBackgroundMusic();
     stopRunningSound();
     gameSounds.bossMusic.currentTime = 0;
-    gameSounds.bossMusic.play().catch(() => { });
+    tryPlayAudio(gameSounds.bossMusic, 'boss music');
     bossMusicStarted = true;
 }
 
 function playChickenSound() {
-    playSound(gameSounds.chicken);
+    playSound(gameSounds.chicken, 'chicken sound');
 }
 
 function playCoinSound() {
-    playSound(gameSounds.coin);
+    playSound(gameSounds.coin, 'coin sound');
 }
 
 function playBottleCollectSound() {
-    playSound(gameSounds.bottleCollect);
+    playSound(gameSounds.bottleCollect, 'bottle collect sound');
 }
 
 function playBottleHitSound() {
-    playSound(gameSounds.bottleHit);
+    playSound(gameSounds.bottleHit, 'bottle hit sound');
 }
 
 function playWinSound() {
-    playSound(gameSounds.win);
+    playSound(gameSounds.win, 'win sound');
 }
 
 function playLoseSound() {
-    playSound(gameSounds.lose);
+    playSound(gameSounds.lose, 'lose sound');
 }
 
 function playRunningSound() {
@@ -215,7 +242,7 @@ function playRunningSound() {
     }
 
     gameSounds.running.currentTime = 0;
-    gameSounds.running.play().catch(() => { });
+    tryPlayAudio(gameSounds.running, 'running sound');
 }
 
 function stopRunningSound() {
@@ -261,13 +288,13 @@ function stopAllSounds() {
     });
 }
 
-function playSound(sound) {
+function playSound(sound, soundName) {
     if (soundMuted || !sound) {
         return;
     }
 
     sound.currentTime = 0;
-    sound.play().catch(() => { });
+    tryPlayAudio(sound, soundName);
 }
 
 function toggleSound() {
@@ -281,7 +308,7 @@ function toggleSound() {
     }
 
     if (bossMusicStarted) {
-        gameSounds.bossMusic.play().catch(() => { });
+        tryPlayAudio(gameSounds.bossMusic, 'boss music');
         return;
     }
 
@@ -289,11 +316,18 @@ function toggleSound() {
 }
 
 function updateSoundButton() {
-    const buttons = document.querySelectorAll('button[onclick="toggleSound()"]');
+    const textButtons = document.querySelectorAll('.sound-btn, #pauseScreen button[onclick="toggleSound()"]');
+    const muteBtn = document.getElementById('mute-btn');
 
-    buttons.forEach(button => {
+    textButtons.forEach(button => {
         button.textContent = soundMuted ? 'Sound Off' : 'Sound On';
     });
+
+    if (muteBtn) {
+        muteBtn.textContent = soundMuted ? '🔇' : '🔊';
+        muteBtn.setAttribute('aria-label', soundMuted ? 'Sound einschalten' : 'Sound ausschalten');
+        muteBtn.title = soundMuted ? 'Sound einschalten' : 'Sound ausschalten';
+    }
 }
 
 function saveSoundSetting() {
@@ -320,6 +354,7 @@ function showPauseScreen() {
 
     stopRunningSound();
     pauseScreen.classList.remove('d-none');
+    updateSoundButton();
 }
 
 function hidePauseScreen() {

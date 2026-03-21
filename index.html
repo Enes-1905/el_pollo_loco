@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>El Pollo Loco</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" type="image/png" href="img/9_intro_outro_screens/start/startscreen_2.png" />
+  <link rel="icon" type="image/png" href="img/favicon.png" />
 
   <script src="models/drawable-object.class.js" defer></script>
   <script src="models/movable-object.class.js" defer></script>
@@ -37,7 +37,10 @@
 
     <div id="game-container" class="d-none">
       <h1>El Pollo Loco</h1>
+
       <div class="canvas-wrapper">
+        <button id="mute-btn" onclick="toggleSound()">🔊</button>
+
         <canvas id="canvas" width="720" height="480"></canvas>
 
         <div id="pauseScreen" class="d-none">

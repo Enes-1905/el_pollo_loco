@@ -256,13 +256,30 @@ class Charackter extends MovableObject {
         this.playAnimation(this.IMAGES_IDLE);
     }
 
+    handleSleepSoundError(error) {
+        if (!error) {
+            return;
+        }
+
+        if (error.name === 'AbortError') {
+            return;
+        }
+
+        console.warn('Sleep sound error:', error);
+    }
+
     playSleepSoundOnce() {
         if (soundMuted || this.sleepSoundPlayed) {
             return;
         }
 
         this.sleep_sound.currentTime = 0;
-        this.sleep_sound.play().catch(() => {});
+        const playPromise = this.sleep_sound.play();
+
+        if (playPromise && typeof playPromise.catch === 'function') {
+            playPromise.catch(error => this.handleSleepSoundError(error));
+        }
+
         this.sleepSoundPlayed = true;
     }
 
