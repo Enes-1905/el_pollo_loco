@@ -1,3 +1,7 @@
+/**
+ * Statusanzeige für den Endboss.
+ * Zeigt die verbleibende Energie des Bosses visuell an.
+ */
 class BossStatusBar extends DrawableObject {
 
     IMAGES = [
@@ -11,6 +15,10 @@ class BossStatusBar extends DrawableObject {
 
     percentage = 100;
 
+    /**
+     * Erstellt die Boss-Statusleiste.
+     * Lädt die Bilder und setzt Startwerte.
+     */
     constructor() {
         super();
         this.loadImages(this.IMAGES);
@@ -21,12 +29,21 @@ class BossStatusBar extends DrawableObject {
         this.setPercentage(100);
     }
 
+    /**
+     * Setzt den aktuellen Prozentwert der Boss-Energie
+     * und aktualisiert das angezeigte Bild.
+     * @param {number} percentage - Aktuelle Energie (0–100)
+     */
     setPercentage(percentage) {
         this.percentage = percentage;
         let path = this.IMAGES[this.resolveImageIndex()];
         this.img = this.imageCache[path];
     }
 
+    /**
+     * Bestimmt das passende Bild basierend auf dem Prozentwert.
+     * @returns {number} Index des Bildes
+     */
     resolveImageIndex() {
         if (this.percentage == 100) {
             return 5;

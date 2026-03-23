@@ -1,3 +1,7 @@
+/**
+ * Wolken-Objekt im Hintergrund.
+ * Bewegt sich langsam von rechts nach links.
+ */
 class Cloud extends MovableObject {
 
     y = 20;
@@ -5,6 +9,9 @@ class Cloud extends MovableObject {
     height = 250;
     speed = 0.16;
 
+    /**
+     * Erstellt eine neue Wolke mit zufälliger Startposition.
+     */
     constructor() {
         super();
         this.loadImage('img/5_background/layers/4_clouds/1.png');
@@ -12,12 +19,19 @@ class Cloud extends MovableObject {
         this.animate();
     }
 
+    /**
+     * Startet die Bewegung der Wolke.
+     */
     animate() {
         setInterval(() => {
             this.moveCloud();
         }, 1000 / 60);
     }
 
+    /**
+     * Bewegt die Wolke nach links und setzt sie zurück,
+     * wenn sie den Bildschirm verlässt.
+     */
     moveCloud() {
         this.x -= this.speed;
 

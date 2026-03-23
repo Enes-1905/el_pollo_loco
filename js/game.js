@@ -16,6 +16,9 @@ let gameSounds = {
     running: new Audio('audio/running.mp3')
 };
 
+/**
+ * Initialisiert das Spiel und erstellt die Welt.
+ */
 function init() {
     initLevel();
     canvas = document.getElementById('canvas');
@@ -25,16 +28,20 @@ function init() {
     updateSoundButton();
 }
 
+/**
+ * Setzt die Lautstärke und Schleifen für alle Sounds.
+ */
 function prepareSounds() {
-    gameSounds.bgMusic.loop = true;
-    gameSounds.bgMusic.volume = 0.12;
+    setLoopAndVolume(gameSounds.bgMusic, true, 0.12);
+    setLoopAndVolume(gameSounds.bossMusic, true, 0.18);
+    setLoopAndVolume(gameSounds.running, true, 0.3);
+    setVolumeValues();
+}
 
-    gameSounds.bossMusic.loop = true;
-    gameSounds.bossMusic.volume = 0.18;
-
-    gameSounds.running.loop = true;
-    gameSounds.running.volume = 0.3;
-
+/**
+ * Setzt Lautstärken für einmalige Sounds.
+ */
+function setVolumeValues() {
     gameSounds.chicken.volume = 0.35;
     gameSounds.coin.volume = 0.4;
     gameSounds.bottleCollect.volume = 0.4;
@@ -43,131 +50,235 @@ function prepareSounds() {
     gameSounds.lose.volume = 0.45;
 }
 
+/**
+ * Setzt Loop und Lautstärke für einen Sound.
+ * @param {HTMLAudioElement} sound
+ * @param {boolean} shouldLoop
+ * @param {number} volume
+ */
+function setLoopAndVolume(sound, shouldLoop, volume) {
+    sound.loop = shouldLoop;
+    sound.volume = volume;
+}
+
+/**
+ * Startet ein neues Spiel.
+ */
 function startGame() {
+    prepareGameStart();
+    init();
+    playBackgroundMusic();
+}
+
+/**
+ * Startet das Spiel nach Game Over oder Win neu.
+ */
+function restartGame() {
+    hideEndScreens();
+    hidePauseScreen();
+    prepareGameStart();
+    init();
+    playBackgroundMusic();
+}
+
+/**
+ * Bereitet den Spielstart vor.
+ */
+function prepareGameStart() {
     hideAllScreens();
     showGameContainer();
     resetKeyboard();
     bossMusicStarted = false;
-    init();
-    playBackgroundMusic();
 }
 
-function restartGame() {
-    hideEndScreens();
-    hidePauseScreen();
-    showGameContainer();
-    resetKeyboard();
-    bossMusicStarted = false;
-    init();
-    playBackgroundMusic();
-}
-
+/**
+ * Wechselt zurück zum Startscreen.
+ */
 function goToHome() {
     hideAllScreens();
     hidePauseScreen();
     stopAllSounds();
     showLegalLinks();
-    document.getElementById('startscreen').classList.remove('d-none');
+    showStartscreen();
     updateSoundButton();
 }
 
+/**
+ * Zeigt den Startscreen.
+ */
+function showStartscreen() {
+    document.getElementById('startscreen').classList.remove('d-none');
+}
+
+/**
+ * Blendet alle Hauptscreens aus.
+ */
 function hideAllScreens() {
-    document.getElementById('startscreen').classList.add('d-none');
-    document.getElementById('game-container').classList.add('d-none');
-    document.getElementById('game-over-screen').classList.add('d-none');
-    document.getElementById('you-win-screen').classList.add('d-none');
+    hideElement('startscreen');
+    hideElement('game-container');
+    hideElement('game-over-screen');
+    hideElement('you-win-screen');
 }
 
+/**
+ * Blendet die Endscreens aus.
+ */
 function hideEndScreens() {
-    document.getElementById('game-over-screen').classList.add('d-none');
-    document.getElementById('you-win-screen').classList.add('d-none');
+    hideElement('game-over-screen');
+    hideElement('you-win-screen');
 }
 
+/**
+ * Zeigt den Spielcontainer an.
+ */
 function showGameContainer() {
-    document.getElementById('game-container').classList.remove('d-none');
+    showElement('game-container');
     hideLegalLinks();
     updateSoundButton();
 }
 
+/**
+ * Zeigt den Game Over Screen.
+ */
 function showGameOverScreen() {
-    document.getElementById('game-container').classList.add('d-none');
+    hideElement('game-container');
     hidePauseScreen();
     stopGameplaySounds();
     showLegalLinks();
-    document.getElementById('game-over-screen').classList.remove('d-none');
+    showElement('game-over-screen');
     updateSoundButton();
     playLoseSound();
 }
 
+/**
+ * Zeigt den You Win Screen.
+ */
 function showYouWinScreen() {
-    document.getElementById('game-container').classList.add('d-none');
+    hideElement('game-container');
     hidePauseScreen();
     stopGameplaySounds();
     showLegalLinks();
-    document.getElementById('you-win-screen').classList.remove('d-none');
+    showElement('you-win-screen');
     updateSoundButton();
     playWinSound();
 }
 
+/**
+ * Blendet ein Element aus.
+ * @param {string} id
+ */
+function hideElement(id) {
+    document.getElementById(id).classList.add('d-none');
+}
+
+/**
+ * Zeigt ein Element an.
+ * @param {string} id
+ */
+function showElement(id) {
+    document.getElementById(id).classList.remove('d-none');
+}
+
+/**
+ * Blendet die Legal Links aus.
+ */
 function hideLegalLinks() {
-    const legal = document.querySelector('.legal-links');
-
-    if (!legal) {
-        return;
-    }
-
-    legal.style.display = 'none';
+    toggleLegalLinks('none');
 }
 
+/**
+ * Zeigt die Legal Links an.
+ */
 function showLegalLinks() {
+    toggleLegalLinks('flex');
+}
+
+/**
+ * Ändert die Anzeige der Legal Links.
+ * @param {string} displayValue
+ */
+function toggleLegalLinks(displayValue) {
     const legal = document.querySelector('.legal-links');
 
     if (!legal) {
         return;
     }
 
-    legal.style.display = 'flex';
+    legal.style.display = displayValue;
 }
 
+/**
+ * Setzt die Tastatur neu zurück.
+ */
 function resetKeyboard() {
     keyboard = new Keyboard();
 }
 
+/**
+ * Öffnet das Info Overlay.
+ */
 function openInfo() {
-    document.getElementById('info-overlay').classList.remove('d-none');
+    showElement('info-overlay');
 }
 
+/**
+ * Schließt das Info Overlay.
+ * @param {Event} event
+ */
 function closeInfo(event) {
     if (!event) {
         hideInfo();
         return;
     }
 
-    if (event.target.id === 'info-overlay') {
-        hideInfo();
-    }
-
-    if (event.target.id === 'close-info-btn') {
+    if (clickedInfoBackground(event) || clickedInfoCloseButton(event)) {
         hideInfo();
     }
 }
 
+/**
+ * Prüft Klick auf Overlay-Hintergrund.
+ * @param {Event} event
+ * @returns {boolean}
+ */
+function clickedInfoBackground(event) {
+    return event.target.id === 'info-overlay';
+}
+
+/**
+ * Prüft Klick auf Schließen-Button.
+ * @param {Event} event
+ * @returns {boolean}
+ */
+function clickedInfoCloseButton(event) {
+    return event.target.id === 'close-info-btn';
+}
+
+/**
+ * Versteckt das Info Overlay.
+ */
 function hideInfo() {
-    document.getElementById('info-overlay').classList.add('d-none');
+    hideElement('info-overlay');
 }
 
+/**
+ * Behandelt Audiofehler.
+ * @param {Error} error
+ * @param {string} soundName
+ */
 function handleAudioError(error, soundName) {
-    if (!error) {
-        return;
-    }
-
-    if (error.name === 'AbortError') {
+    if (!error || error.name === 'AbortError') {
         return;
     }
 
     console.warn('Audio error:', soundName, error);
 }
 
+/**
+ * Spielt einen Sound sicher ab.
+ * @param {HTMLAudioElement} audio
+ * @param {string} soundName
+ */
 function tryPlayAudio(audio, soundName) {
     if (!audio) {
         return;
@@ -180,22 +291,29 @@ function tryPlayAudio(audio, soundName) {
     }
 }
 
+/**
+ * Startet die Hintergrundmusik.
+ */
 function playBackgroundMusic() {
     if (soundMuted) {
         return;
     }
 
-    gameSounds.bgMusic.pause();
-    gameSounds.bossMusic.pause();
-    gameSounds.bgMusic.currentTime = 0;
+    stopMusic(gameSounds.bgMusic);
+    stopMusic(gameSounds.bossMusic);
     tryPlayAudio(gameSounds.bgMusic, 'background music');
 }
 
+/**
+ * Stoppt die Hintergrundmusik.
+ */
 function stopBackgroundMusic() {
-    gameSounds.bgMusic.pause();
-    gameSounds.bgMusic.currentTime = 0;
+    stopMusic(gameSounds.bgMusic);
 }
 
+/**
+ * Startet die Bossmusik.
+ */
 function playBossMusic() {
     if (soundMuted || bossMusicStarted) {
         return;
@@ -203,41 +321,65 @@ function playBossMusic() {
 
     stopBackgroundMusic();
     stopRunningSound();
+    resetAndPlayBossMusic();
+}
+
+/**
+ * Startet die Bossmusik neu.
+ */
+function resetAndPlayBossMusic() {
     gameSounds.bossMusic.currentTime = 0;
     tryPlayAudio(gameSounds.bossMusic, 'boss music');
     bossMusicStarted = true;
 }
 
+/**
+ * Spielt den Chicken Sound.
+ */
 function playChickenSound() {
     playSound(gameSounds.chicken, 'chicken sound');
 }
 
+/**
+ * Spielt den Coin Sound.
+ */
 function playCoinSound() {
     playSound(gameSounds.coin, 'coin sound');
 }
 
+/**
+ * Spielt den Bottle Collect Sound.
+ */
 function playBottleCollectSound() {
     playSound(gameSounds.bottleCollect, 'bottle collect sound');
 }
 
+/**
+ * Spielt den Bottle Hit Sound.
+ */
 function playBottleHitSound() {
     playSound(gameSounds.bottleHit, 'bottle hit sound');
 }
 
+/**
+ * Spielt den Win Sound.
+ */
 function playWinSound() {
     playSound(gameSounds.win, 'win sound');
 }
 
+/**
+ * Spielt den Lose Sound.
+ */
 function playLoseSound() {
     playSound(gameSounds.lose, 'lose sound');
 }
 
+/**
+ * Spielt den Lauf-Sound.
+ */
 function playRunningSound() {
-    if (soundMuted) {
-        return;
-    }
-
-    if (!gameSounds.running.paused) {
+    if (soundMuted || !gameSounds.running.paused) {
         return;
     }
 
@@ -245,11 +387,16 @@ function playRunningSound() {
     tryPlayAudio(gameSounds.running, 'running sound');
 }
 
+/**
+ * Stoppt den Lauf-Sound.
+ */
 function stopRunningSound() {
-    gameSounds.running.pause();
-    gameSounds.running.currentTime = 0;
+    stopMusic(gameSounds.running);
 }
 
+/**
+ * Stoppt den Schlafsound des Charakters.
+ */
 function stopCharacterSounds() {
     if (!worldObj || !worldObj.character) {
         return;
@@ -260,34 +407,42 @@ function stopCharacterSounds() {
     }
 }
 
+/**
+ * Stoppt alle Gameplay-Sounds außer Win/Lose.
+ */
 function stopGameplaySounds() {
     stopCharacterSounds();
-
-    gameSounds.bgMusic.pause();
-    gameSounds.bgMusic.currentTime = 0;
-    gameSounds.bossMusic.pause();
-    gameSounds.bossMusic.currentTime = 0;
-    gameSounds.chicken.pause();
-    gameSounds.chicken.currentTime = 0;
-    gameSounds.coin.pause();
-    gameSounds.coin.currentTime = 0;
-    gameSounds.bottleCollect.pause();
-    gameSounds.bottleCollect.currentTime = 0;
-    gameSounds.bottleHit.pause();
-    gameSounds.bottleHit.currentTime = 0;
-    gameSounds.running.pause();
-    gameSounds.running.currentTime = 0;
+    stopMusic(gameSounds.bgMusic);
+    stopMusic(gameSounds.bossMusic);
+    stopMusic(gameSounds.chicken);
+    stopMusic(gameSounds.coin);
+    stopMusic(gameSounds.bottleCollect);
+    stopMusic(gameSounds.bottleHit);
+    stopMusic(gameSounds.running);
 }
 
+/**
+ * Stoppt alle Sounds komplett.
+ */
 function stopAllSounds() {
     stopCharacterSounds();
-
-    Object.values(gameSounds).forEach(sound => {
-        sound.pause();
-        sound.currentTime = 0;
-    });
+    Object.values(gameSounds).forEach(sound => stopMusic(sound));
 }
 
+/**
+ * Stoppt einen Sound und setzt ihn zurück.
+ * @param {HTMLAudioElement} sound
+ */
+function stopMusic(sound) {
+    sound.pause();
+    sound.currentTime = 0;
+}
+
+/**
+ * Spielt einen normalen Sound ab.
+ * @param {HTMLAudioElement} sound
+ * @param {string} soundName
+ */
 function playSound(sound, soundName) {
     if (soundMuted || !sound) {
         return;
@@ -297,6 +452,9 @@ function playSound(sound, soundName) {
     tryPlayAudio(sound, soundName);
 }
 
+/**
+ * Schaltet den Sound an oder aus.
+ */
 function toggleSound() {
     soundMuted = !soundMuted;
     saveSoundSetting();
@@ -307,6 +465,13 @@ function toggleSound() {
         return;
     }
 
+    resumeActiveMusic();
+}
+
+/**
+ * Spielt passende Musik nach dem Entmuten weiter.
+ */
+function resumeActiveMusic() {
     if (bossMusicStarted) {
         tryPlayAudio(gameSounds.bossMusic, 'boss music');
         return;
@@ -315,25 +480,69 @@ function toggleSound() {
     playBackgroundMusic();
 }
 
+/**
+ * Aktualisiert alle Sound-Buttons.
+ */
 function updateSoundButton() {
-    const textButtons = document.querySelectorAll('.sound-btn, #pauseScreen button[onclick="toggleSound()"]');
+    const textButtons = getSoundTextButtons();
     const muteBtn = document.getElementById('mute-btn');
 
-    textButtons.forEach(button => {
-        button.textContent = soundMuted ? 'Sound Off' : 'Sound On';
-    });
-
-    if (muteBtn) {
-        muteBtn.textContent = soundMuted ? '🔇' : '🔊';
-        muteBtn.setAttribute('aria-label', soundMuted ? 'Sound einschalten' : 'Sound ausschalten');
-        muteBtn.title = soundMuted ? 'Sound einschalten' : 'Sound ausschalten';
-    }
+    updateTextButtons(textButtons);
+    updateMuteIconButton(muteBtn);
 }
 
+/**
+ * Gibt alle Text-Soundbuttons zurück.
+ * @returns {NodeListOf<Element>}
+ */
+function getSoundTextButtons() {
+    return document.querySelectorAll(
+        '.sound-btn, #pauseScreen button[onclick="toggleSound()"]'
+    );
+}
+
+/**
+ * Aktualisiert Text-Soundbuttons.
+ * @param {NodeListOf<Element>} buttons
+ */
+function updateTextButtons(buttons) {
+    buttons.forEach(button => {
+        button.textContent = soundMuted ? 'Sound Off' : 'Sound On';
+    });
+}
+
+/**
+ * Aktualisiert den Mute-Button im Spiel.
+ * @param {HTMLElement} muteBtn
+ */
+function updateMuteIconButton(muteBtn) {
+    if (!muteBtn) {
+        return;
+    }
+
+    muteBtn.textContent = soundMuted ? '🔇' : '🔊';
+    muteBtn.setAttribute('aria-label', getMuteLabel());
+    muteBtn.title = getMuteLabel();
+}
+
+/**
+ * Gibt den Mute-Button Text zurück.
+ * @returns {string}
+ */
+function getMuteLabel() {
+    return soundMuted ? 'Sound einschalten' : 'Sound ausschalten';
+}
+
+/**
+ * Speichert die Sound-Einstellung.
+ */
 function saveSoundSetting() {
     localStorage.setItem('soundMuted', JSON.stringify(soundMuted));
 }
 
+/**
+ * Lädt die Sound-Einstellung.
+ */
 function loadSoundSetting() {
     const savedValue = localStorage.getItem('soundMuted');
 
@@ -345,6 +554,9 @@ function loadSoundSetting() {
     soundMuted = JSON.parse(savedValue);
 }
 
+/**
+ * Zeigt den Pause Screen.
+ */
 function showPauseScreen() {
     const pauseScreen = document.getElementById('pauseScreen');
 
@@ -357,6 +569,9 @@ function showPauseScreen() {
     updateSoundButton();
 }
 
+/**
+ * Versteckt den Pause Screen.
+ */
 function hidePauseScreen() {
     const pauseScreen = document.getElementById('pauseScreen');
 
@@ -367,6 +582,9 @@ function hidePauseScreen() {
     pauseScreen.classList.add('d-none');
 }
 
+/**
+ * Setzt das Spiel fort.
+ */
 function resumeGame() {
     if (!worldObj) {
         return;
@@ -376,38 +594,78 @@ function resumeGame() {
     hidePauseScreen();
 }
 
+/**
+ * Schaltet Pause aus dem Spiel heraus um.
+ */
 function togglePauseFromGame() {
-    if (!worldObj || worldObj.gameOver || worldObj.gameWon) {
+    if (!canTogglePause()) {
         return;
     }
 
     worldObj.isPaused = !worldObj.isPaused;
+    worldObj.isPaused ? showPauseScreen() : hidePauseScreen();
+}
 
-    if (worldObj.isPaused) {
-        showPauseScreen();
-    } else {
-        hidePauseScreen();
+/**
+ * Prüft, ob Pause umgeschaltet werden darf.
+ * @returns {boolean}
+ */
+function canTogglePause() {
+    return !!worldObj && !worldObj.gameOver && !worldObj.gameWon;
+}
+
+/**
+ * Setzt einen Tastenzustand.
+ * @param {string} code
+ * @param {boolean} isPressed
+ */
+function setKeyState(code, isPressed) {
+    switch (code) {
+        case 'ArrowRight':
+            keyboard.right = isPressed;
+            break;
+        case 'ArrowLeft':
+            keyboard.left = isPressed;
+            break;
+        case 'ArrowUp':
+            keyboard.up = isPressed;
+            break;
+        case 'ArrowDown':
+            keyboard.down = isPressed;
+            break;
+        case 'Space':
+            keyboard.space = isPressed;
+            break;
+        case 'KeyD':
+            keyboard.throw = isPressed;
+            break;
+        case 'Escape':
+            keyboard.esc = isPressed;
+            break;
+        case 'KeyM':
+            keyboard.mute = isPressed;
+            break;
     }
 }
 
-function setKeyState(code, isPressed) {
-    if (code === 'ArrowRight') keyboard.right = isPressed;
-    if (code === 'ArrowLeft') keyboard.left = isPressed;
-    if (code === 'ArrowUp') keyboard.up = isPressed;
-    if (code === 'ArrowDown') keyboard.down = isPressed;
-    if (code === 'Space') keyboard.space = isPressed;
-    if (code === 'KeyD') keyboard.throw = isPressed;
-    if (code === 'Escape') keyboard.esc = isPressed;
-    if (code === 'KeyM') keyboard.mute = isPressed;
-}
-
-window.addEventListener('keydown', (e) => {
+/**
+ * Behandelt Keydown Events.
+ * @param {KeyboardEvent} e
+ */
+function handleKeyDown(e) {
     if (e.code === 'Escape') {
         e.preventDefault();
     }
 
     setKeyState(e.code, true);
+    handleSpecialKeys(e);
+}
 
+/**
+ * Führt Sonderaktionen bei Tasten aus.
+ * @param {KeyboardEvent} e
+ */
+function handleSpecialKeys(e) {
     if (e.code === 'Escape' && !e.repeat) {
         togglePauseFromGame();
     }
@@ -415,12 +673,22 @@ window.addEventListener('keydown', (e) => {
     if (e.code === 'KeyM' && !e.repeat) {
         toggleSound();
     }
-});
+}
 
-window.addEventListener('keyup', (e) => {
+/**
+ * Behandelt Keyup Events.
+ * @param {KeyboardEvent} e
+ */
+function handleKeyUp(e) {
     setKeyState(e.code, false);
-});
+}
 
+window.addEventListener('keydown', handleKeyDown);
+window.addEventListener('keyup', handleKeyUp);
+
+/**
+ * Fügt alle Touch Controls hinzu.
+ */
 function addTouchControls() {
     addTouchButton('btn-left', 'left');
     addTouchButton('btn-right', 'right');
@@ -428,6 +696,11 @@ function addTouchControls() {
     addTouchButton('btn-throw', 'throw');
 }
 
+/**
+ * Verbindet einen Touch Button mit einer Taste.
+ * @param {string} buttonId
+ * @param {string} keyName
+ */
 function addTouchButton(buttonId, keyName) {
     let button = document.getElementById(buttonId);
 
@@ -435,25 +708,48 @@ function addTouchButton(buttonId, keyName) {
         return;
     }
 
-    button.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        keyboard[keyName] = true;
-    });
-
-    button.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        keyboard[keyName] = false;
-        stopRunningSound();
-    });
-
-    button.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-    });
+    button.addEventListener('touchstart', e => handleTouchStart(e, keyName));
+    button.addEventListener('touchend', e => handleTouchEnd(e, keyName));
+    button.addEventListener('contextmenu', preventContextMenu);
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+/**
+ * Reagiert auf Touchstart.
+ * @param {Event} e
+ * @param {string} keyName
+ */
+function handleTouchStart(e, keyName) {
+    e.preventDefault();
+    keyboard[keyName] = true;
+}
+
+/**
+ * Reagiert auf Touchend.
+ * @param {Event} e
+ * @param {string} keyName
+ */
+function handleTouchEnd(e, keyName) {
+    e.preventDefault();
+    keyboard[keyName] = false;
+    stopRunningSound();
+}
+
+/**
+ * Verhindert das Kontextmenü.
+ * @param {Event} e
+ */
+function preventContextMenu(e) {
+    e.preventDefault();
+}
+
+/**
+ * Führt Startlogik nach DOM-Laden aus.
+ */
+function handleDomLoaded() {
     loadSoundSetting();
     updateSoundButton();
     showLegalLinks();
     addTouchControls();
-});
+}
+
+window.addEventListener('DOMContentLoaded', handleDomLoaded);

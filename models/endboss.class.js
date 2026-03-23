@@ -1,3 +1,7 @@
+/**
+ * Repräsentiert den Endboss des Spiels.
+ * Steuert Bewegung, Angriff, Hitboxen und Animationen.
+ */
 class Endboss extends MovableObject {
 
     height = 400;
@@ -61,6 +65,10 @@ class Endboss extends MovableObject {
         'img/4_enemie_boss_chicken/5_dead/G26.png'
     ];
 
+    /**
+     * Erstellt den Endboss.
+     * @param {number} x
+     */
     constructor(x = 1700) {
         super();
         this.x = x;
@@ -69,6 +77,9 @@ class Endboss extends MovableObject {
         this.animate();
     }
 
+    /**
+     * Lädt alle Bilder des Endbosses.
+     */
     loadBossImages() {
         this.loadImage(this.IMAGES_ALERT[0]);
         this.loadImages(this.IMAGES_WALK);
@@ -78,29 +89,52 @@ class Endboss extends MovableObject {
         this.loadImages(this.IMAGES_DEAD);
     }
 
+    /**
+     * Startet Bewegung und Animation.
+     */
     animate() {
+        this.startMovementLoop();
+        this.startAnimationLoop();
+    }
+
+    /**
+     * Startet den Bewegungs-Loop.
+     */
+    startMovementLoop() {
         setInterval(() => {
-            if (worldObj && worldObj.isPaused) return;
+            if (worldObj && worldObj.isPaused) {
+                return;
+            }
 
             if (!this.isDead()) {
                 this.handleMovement();
             }
         }, 1000 / 60);
+    }
 
+    /**
+     * Startet den Animations-Loop.
+     */
+    startAnimationLoop() {
         setInterval(() => {
-            if (worldObj && worldObj.isPaused) return;
+            if (worldObj && worldObj.isPaused) {
+                return;
+            }
+
             this.handleAnimation();
         }, 140);
     }
 
+    /**
+     * Steuert die Bewegung und Angriffe des Bosses.
+     */
     handleMovement() {
         if (!this.activated || !this.world) {
             return;
         }
 
-        let characterCenter = this.world.character.x + this.world.character.width / 2;
-        let bossCenter = this.x + this.width / 2;
-        let distance = bossCenter - characterCenter;
+        let characterCenter = this.getCharacterCenter();
+        let distance = this.getDistanceToCharacter(characterCenter);
 
         this.followCharacter(characterCenter);
 
@@ -109,6 +143,9 @@ class Endboss extends MovableObject {
         }
     }
 
+    /**
+     * Wählt die passende Boss-Animation.
+     */
     handleAnimation() {
         if (this.isDead()) {
             this.playAnimation(this.IMAGES_DEAD);
@@ -133,86 +170,174 @@ class Endboss extends MovableObject {
         this.playAnimation(this.IMAGES_ALERT);
     }
 
+    /**
+     * Gibt die Mitte des Charakters zurück.
+     * @returns {number}
+     */
+    getCharacterCenter() {
+        return this.world.character.x + this.world.character.width / 2;
+    }
+
+    /**
+     * Gibt die Mitte des Bosses zurück.
+     * @returns {number}
+     */
+    getBossCenter() {
+        return this.x + this.width / 2;
+    }
+
+    /**
+     * Berechnet den Abstand zum Charakter.
+     * @param {number} characterCenter
+     * @returns {number}
+     */
+    getDistanceToCharacter(characterCenter) {
+        return this.getBossCenter() - characterCenter;
+    }
+
+    /**
+     * Lässt den Boss dem Charakter folgen.
+     * @param {number} characterCenter
+     */
     followCharacter(characterCenter) {
-        let bossCenter = this.x + this.width / 2;
-        let distance = bossCenter - characterCenter;
+        let distance = this.getDistanceToCharacter(characterCenter);
 
         if (Math.abs(distance) < 15) {
             return;
         }
 
-        if (characterCenter < bossCenter) {
-            this.moveLeft();
-            this.otherdirection = false;
+        if (characterCenter < this.getBossCenter()) {
+            this.moveBossLeft();
             return;
         }
 
-        this.moveRight();
+        this.moveBossRight();
+    }
+
+    /**
+     * Bewegt den Boss nach links.
+     */
+    moveBossLeft() {
+        this.x -= this.speed;
+        this.otherdirection = false;
+    }
+
+    /**
+     * Bewegt den Boss nach rechts.
+     */
+    moveBossRight() {
+        this.x += this.speed;
         this.otherdirection = true;
     }
 
-    moveLeft() {
-        this.x -= this.speed;
-    }
-
-    moveRight() {
-        this.x += this.speed;
-    }
-
+    /**
+     * Prüft, ob der Boss gerade läuft.
+     * @returns {boolean}
+     */
     isWalking() {
         if (!this.activated || !this.world || this.attacking) {
             return false;
         }
 
-        let characterCenter = this.world.character.x + this.world.character.width / 2;
-        let bossCenter = this.x + this.width / 2;
-        let distance = bossCenter - characterCenter;
-
+        let distance = this.getDistanceToCharacter(this.getCharacterCenter());
         return Math.abs(distance) > 15;
     }
 
+    /**
+     * Prüft, ob der Boss wieder angreifen darf.
+     * @returns {boolean}
+     */
     canAttack() {
         return Date.now() - this.lastAttack > this.attackCooldown;
     }
 
+    /**
+     * Startet den Angriff des Bosses.
+     */
     startAttack() {
         this.attacking = true;
         this.lastAttack = Date.now();
+        this.updateAttackDirection();
+        this.endAttackLater();
+    }
 
+    /**
+     * Richtet den Boss vor dem Angriff aus.
+     */
+    updateAttackDirection() {
         if (this.world && this.world.character.x < this.x) {
             this.otherdirection = false;
-        } else {
-            this.otherdirection = true;
+            return;
         }
 
+        this.otherdirection = true;
+    }
+
+    /**
+     * Beendet den Angriff nach kurzer Zeit.
+     */
+    endAttackLater() {
         setTimeout(() => {
-            if (worldObj && worldObj.isPaused) return;
+            if (worldObj && worldObj.isPaused) {
+                return;
+            }
+
             this.attacking = false;
         }, 650);
     }
 
+    /**
+     * Gibt die Angriffshitbox zurück.
+     * @returns {{x:number, y:number, width:number, height:number}}
+     */
     getAttackHitbox() {
         let hitboxWidth = 80;
         let hitboxHeight = 105;
         let hitboxY = this.y + 200;
 
         if (this.otherdirection) {
-            return {
-                x: this.x + this.width - 5,
-                y: hitboxY,
-                width: hitboxWidth,
-                height: hitboxHeight
-            };
+            return this.getRightAttackHitbox(hitboxWidth, hitboxHeight, hitboxY);
         }
 
+        return this.getLeftAttackHitbox(hitboxWidth, hitboxHeight, hitboxY);
+    }
+
+    /**
+     * Gibt die rechte Angriffshitbox zurück.
+     * @param {number} width
+     * @param {number} height
+     * @param {number} y
+     * @returns {{x:number, y:number, width:number, height:number}}
+     */
+    getRightAttackHitbox(width, height, y) {
         return {
-            x: this.x - 30,
-            y: hitboxY,
-            width: hitboxWidth,
-            height: hitboxHeight
+            x: this.x + this.width - 5,
+            y: y,
+            width: width,
+            height: height
         };
     }
 
+    /**
+     * Gibt die linke Angriffshitbox zurück.
+     * @param {number} width
+     * @param {number} height
+     * @param {number} y
+     * @returns {{x:number, y:number, width:number, height:number}}
+     */
+    getLeftAttackHitbox(width, height, y) {
+        return {
+            x: this.x - 30,
+            y: y,
+            width: width,
+            height: height
+        };
+    }
+
+    /**
+     * Gibt die Körper-Hitbox zurück.
+     * @returns {{x:number, y:number, width:number, height:number}}
+     */
     getBodyHitbox() {
         return {
             x: this.x + 105,
@@ -222,6 +347,12 @@ class Endboss extends MovableObject {
         };
     }
 
+    /**
+     * Prüft, ob der Charakter in einer Hitbox steht.
+     * @param {Charackter} character
+     * @param {{x:number, y:number, width:number, height:number}} hitbox
+     * @returns {boolean}
+     */
     isCharacterInsideHitbox(character, hitbox) {
         return character.getHitboxRight() > hitbox.x &&
             character.getHitboxBottom() > hitbox.y &&
@@ -229,6 +360,11 @@ class Endboss extends MovableObject {
             character.getHitboxTop() < hitbox.y + hitbox.height;
     }
 
+    /**
+     * Prüft, ob der Charakter in Angriffsreichweite ist.
+     * @param {Charackter} character
+     * @returns {boolean}
+     */
     characterInAttackRange(character) {
         let attackHitbox = this.getAttackHitbox();
         let bodyHitbox = this.getBodyHitbox();
@@ -237,17 +373,15 @@ class Endboss extends MovableObject {
             this.isCharacterInsideHitbox(character, bodyHitbox);
     }
 
+    /**
+     * Fügt dem Boss Schaden zu.
+     */
     hit() {
         if (this.isDead()) {
             return;
         }
 
-        this.energy -= 20;
-
-        if (this.energy < 0) {
-            this.energy = 0;
-        }
-
+        this.reduceEnergy(20);
         this.lastHit = Date.now();
 
         if (this.isDead()) {
@@ -255,12 +389,32 @@ class Endboss extends MovableObject {
         }
     }
 
+    /**
+     * Verringert die Energie des Bosses.
+     * @param {number} amount
+     */
+    reduceEnergy(amount) {
+        this.energy -= amount;
+
+        if (this.energy < 0) {
+            this.energy = 0;
+        }
+    }
+
+    /**
+     * Prüft, ob der Boss gerade verletzt ist.
+     * @returns {boolean}
+     */
     isHurt() {
         let timePassed = Date.now() - this.lastHit;
         timePassed = timePassed / 1000;
         return timePassed < 0.5 && !this.isDead();
     }
 
+    /**
+     * Prüft, ob der Boss tot ist.
+     * @returns {boolean}
+     */
     isDead() {
         return this.energy === 0;
     }

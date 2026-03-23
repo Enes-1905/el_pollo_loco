@@ -1,3 +1,7 @@
+/**
+ * Repräsentiert ein kleines Huhn als Gegner.
+ * Schneller als normale Hühner, gleiche Logik.
+ */
 class SmallChicken extends MovableObject {
 
     y = 380;
@@ -5,6 +9,7 @@ class SmallChicken extends MovableObject {
     width = 60;
     energy = 20;
     deadTime = 0;
+
     offset = {
         top: 6,
         right: 8,
@@ -24,30 +29,64 @@ class SmallChicken extends MovableObject {
 
     /**
      * Erstellt ein kleines Huhn.
-     * @param {number} x - Startposition auf der X-Achse.
+     * @param {number} x
      */
     constructor(x) {
         super();
+        this.loadChickenImages();
+        this.x = x;
+        this.speed = this.getRandomSpeed();
+        this.otherdirection = false;
+        this.animate();
+    }
+
+    /**
+     * Lädt alle Bilder des kleinen Huhns.
+     */
+    loadChickenImages() {
         this.loadImage(this.images_walking[0]);
         this.loadImages(this.images_walking);
         this.loadImages(this.IMAGES_DEAD);
-        this.x = x;
-        this.speed = 0.35 + Math.random() * 0.3;
-        this.otherdirection = false;
-        this.animate();
+    }
+
+    /**
+     * Gibt eine zufällige Geschwindigkeit zurück.
+     * @returns {number}
+     */
+    getRandomSpeed() {
+        return 0.35 + Math.random() * 0.3;
     }
 
     /**
      * Startet Bewegung und Animation.
      */
     animate() {
+        this.startMovementLoop();
+        this.startAnimationLoop();
+    }
+
+    /**
+     * Startet den Bewegungs-Loop.
+     */
+    startMovementLoop() {
         setInterval(() => {
-            if (worldObj && worldObj.isPaused) return;
+            if (worldObj && worldObj.isPaused) {
+                return;
+            }
+
             this.handleMovement();
         }, 1000 / 60);
+    }
 
+    /**
+     * Startet den Animations-Loop.
+     */
+    startAnimationLoop() {
         setInterval(() => {
-            if (worldObj && worldObj.isPaused) return;
+            if (worldObj && worldObj.isPaused) {
+                return;
+            }
+
             this.handleAnimation();
         }, 200);
     }
@@ -60,6 +99,13 @@ class SmallChicken extends MovableObject {
             return;
         }
 
+        this.moveChickenLeft();
+    }
+
+    /**
+     * Bewegt das Huhn nach links.
+     */
+    moveChickenLeft() {
         this.x -= this.speed;
         this.otherdirection = false;
     }

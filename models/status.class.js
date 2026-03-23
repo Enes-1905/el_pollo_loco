@@ -1,3 +1,6 @@
+/**
+ * Statusleiste für die Lebensenergie des Spielers.
+ */
 class StatusBar extends DrawableObject {
 
     IMAGES = [
@@ -11,6 +14,9 @@ class StatusBar extends DrawableObject {
 
     percentage = 100;
 
+    /**
+     * Erstellt die Health-Bar.
+     */
     constructor() {
         super();
         this.loadImages(this.IMAGES);
@@ -21,12 +27,20 @@ class StatusBar extends DrawableObject {
         this.setPercentage(100);
     }
 
+    /**
+     * Setzt den aktuellen Energie-Wert.
+     * @param {number} percentage - Energie (0–100)
+     */
     setPercentage(percentage) {
         this.percentage = percentage;
         let imagePath = this.IMAGES[this.resolveImageIndex()];
         this.img = this.imageCache[imagePath];
     }
 
+    /**
+     * Wählt das passende Bild basierend auf dem Prozentwert.
+     * @returns {number} Index des Bildes
+     */
     resolveImageIndex() {
         if (this.percentage == 100) {
             return 5;
@@ -44,6 +58,10 @@ class StatusBar extends DrawableObject {
     }
 }
 
+
+/**
+ * Statusleiste für gesammelte Münzen.
+ */
 class CoinStatusBar extends DrawableObject {
 
     IMAGES = [
@@ -57,6 +75,9 @@ class CoinStatusBar extends DrawableObject {
 
     percentage = 0;
 
+    /**
+     * Erstellt die Coin-Bar.
+     */
     constructor() {
         super();
         this.loadImages(this.IMAGES);
@@ -67,12 +88,20 @@ class CoinStatusBar extends DrawableObject {
         this.setPercentage(0);
     }
 
+    /**
+     * Setzt den aktuellen Münz-Wert.
+     * @param {number} percentage - Münzen (0–100)
+     */
     setPercentage(percentage) {
         this.percentage = percentage;
         let imagePath = this.IMAGES[this.resolveImageIndex()];
         this.img = this.imageCache[imagePath];
     }
 
+    /**
+     * Wählt das passende Bild basierend auf dem Prozentwert.
+     * @returns {number}
+     */
     resolveImageIndex() {
         if (this.percentage == 100) {
             return 5;
@@ -90,6 +119,10 @@ class CoinStatusBar extends DrawableObject {
     }
 }
 
+
+/**
+ * Statusleiste für gesammelte Flaschen.
+ */
 class BottleStatusBar extends DrawableObject {
 
     IMAGES = [
@@ -103,6 +136,9 @@ class BottleStatusBar extends DrawableObject {
 
     percentage = 0;
 
+    /**
+     * Erstellt die Bottle-Bar.
+     */
     constructor() {
         super();
         this.loadImages(this.IMAGES);
@@ -113,12 +149,20 @@ class BottleStatusBar extends DrawableObject {
         this.setPercentage(0);
     }
 
+    /**
+     * Setzt den aktuellen Flaschen-Wert.
+     * @param {number} percentage - Flaschen (0–100)
+     */
     setPercentage(percentage) {
         this.percentage = percentage;
         let imagePath = this.IMAGES[this.resolveImageIndex()];
         this.img = this.imageCache[imagePath];
     }
 
+    /**
+     * Wählt das passende Bild basierend auf dem Prozentwert.
+     * @returns {number}
+     */
     resolveImageIndex() {
         if (this.percentage == 100) {
             return 5;

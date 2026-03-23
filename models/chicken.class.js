@@ -1,3 +1,7 @@
+/**
+ * Repräsentiert ein normales Huhn als Gegner.
+ * Steuert Bewegung, Tod und Animation.
+ */
 class Chicken extends MovableObject {
 
     y = 360;
@@ -6,6 +10,7 @@ class Chicken extends MovableObject {
     energy = 20;
     isDeadChicken = false;
     deadTime = 0;
+
     offset = {
         top: 8,
         right: 10,
@@ -25,30 +30,64 @@ class Chicken extends MovableObject {
 
     /**
      * Erstellt ein normales Huhn.
-     * @param {number} x - Startposition auf der X-Achse.
+     * @param {number} x
      */
     constructor(x) {
         super();
+        this.loadChickenImages();
+        this.x = x;
+        this.speed = this.getRandomSpeed();
+        this.otherdirection = false;
+        this.animate();
+    }
+
+    /**
+     * Lädt alle Bilder des Huhns.
+     */
+    loadChickenImages() {
         this.loadImage(this.images_walking[0]);
         this.loadImages(this.images_walking);
         this.loadImages(this.IMAGES_DEAD);
-        this.x = x;
-        this.speed = 0.2 + Math.random() * 0.25;
-        this.otherdirection = false;
-        this.animate();
+    }
+
+    /**
+     * Gibt eine zufällige Laufgeschwindigkeit zurück.
+     * @returns {number}
+     */
+    getRandomSpeed() {
+        return 0.2 + Math.random() * 0.25;
     }
 
     /**
      * Startet Bewegung und Animation.
      */
     animate() {
+        this.startMovementLoop();
+        this.startAnimationLoop();
+    }
+
+    /**
+     * Startet den Bewegungs-Loop.
+     */
+    startMovementLoop() {
         setInterval(() => {
-            if (worldObj && worldObj.isPaused) return;
+            if (worldObj && worldObj.isPaused) {
+                return;
+            }
+
             this.handleMovement();
         }, 1000 / 60);
+    }
 
+    /**
+     * Startet den Animations-Loop.
+     */
+    startAnimationLoop() {
         setInterval(() => {
-            if (worldObj && worldObj.isPaused) return;
+            if (worldObj && worldObj.isPaused) {
+                return;
+            }
+
             this.handleAnimation();
         }, 200);
     }
@@ -61,6 +100,13 @@ class Chicken extends MovableObject {
             return;
         }
 
+        this.moveChickenLeft();
+    }
+
+    /**
+     * Bewegt das Huhn nach links.
+     */
+    moveChickenLeft() {
         this.x -= this.speed;
         this.otherdirection = false;
     }

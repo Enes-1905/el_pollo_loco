@@ -23,13 +23,13 @@ box-sizing: border-box;
 
 .screen-wrapper {
 width: 100%;
-height: calc(100vh - 40px);
+height: 100vh;
 position: relative;
 display: flex;
 justify-content: center;
 align-items: center;
 overflow: hidden;
-padding: 20px 16px 0 16px;
+padding: 20px 16px;
 }
 
 #startscreen,
@@ -45,16 +45,18 @@ overflow: hidden;
 canvas {
 background-color: transparent;
 display: block;
-max-width: 100%;
-max-height: 100%;
+width: 100%;
+height: 100%;
 }
+
+/* ---------- GAME AREA ---------- */
 
 .canvas-wrapper {
 position: relative;
-width: 720px;
-height: 480px;
-max-width: 100%;
-max-height: 100%;
+width: 100%;
+max-width: 720px;
+aspect-ratio: 3 / 2;
+margin: 0 auto;
 overflow: hidden;
 border-radius: 12px;
 box-shadow:
@@ -201,6 +203,7 @@ display: flex;
 flex-direction: column;
 align-items: center;
 gap: 16px;
+width: 100%;
 }
 
 #game-container h1 {
@@ -274,6 +277,10 @@ user-select: none;
 /* ---------- LEGAL LINKS ---------- */
 
 .legal-links {
+position: fixed;
+left: 0;
+right: 0;
+bottom: 0;
 height: 40px;
 display: flex;
 justify-content: center;
@@ -281,7 +288,7 @@ align-items: center;
 gap: 24px;
 margin: 0;
 padding: 0;
-overflow: hidden;
+z-index: 10;
 }
 
 .legal-links a {
@@ -396,7 +403,7 @@ background-attachment: scroll;
 
 .screen-wrapper {
 width: 100%;
-height: calc(100vh - 40px);
+height: 100vh;
 padding: 0;
 justify-content: center;
 align-items: center;
@@ -417,10 +424,10 @@ display: none;
 }
 
 #game-container .canvas-wrapper {
-width: 100%;
-height: 100%;
-max-width: 100%;
-max-height: 100%;
+width: min(100vw, calc(100vh * 1.5));
+max-width: 100vw;
+max-height: 100vh;
+aspect-ratio: 3 / 2;
 border-radius: 0;
 border: none;
 box-shadow: none;
@@ -666,8 +673,11 @@ height: 100vh;
 }
 
 #game-container .canvas-wrapper {
-width: 100vw;
-height: 100vh;
+width: min(100vw, calc(100vh * 1.5));
+height: auto;
+max-width: 100vw;
+max-height: 100vh;
+aspect-ratio: 3 / 2;
 }
 
 #mobile-controls {
