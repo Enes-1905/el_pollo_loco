@@ -1,6 +1,6 @@
 /**
- * Wolken-Objekt im Hintergrund.
- * Bewegt sich langsam von rechts nach links.
+ * Cloud object in the background.
+ * Moves slowly from right to left.
  */
 class Cloud extends MovableObject {
 
@@ -10,7 +10,7 @@ class Cloud extends MovableObject {
     speed = 0.16;
 
     /**
-     * Erstellt eine neue Wolke mit zufälliger Startposition.
+     * Creates a new cloud with a random starting position.
      */
     constructor() {
         super();
@@ -20,7 +20,7 @@ class Cloud extends MovableObject {
     }
 
     /**
-     * Startet die Bewegung der Wolke.
+     * Starts the cloud movement.
      */
     animate() {
         setInterval(() => {
@@ -29,8 +29,8 @@ class Cloud extends MovableObject {
     }
 
     /**
-     * Bewegt die Wolke nach links und setzt sie zurück,
-     * wenn sie den Bildschirm verlässt.
+     * Moves the cloud to the left and resets it
+     * when it leaves the screen.
      */
     moveCloud() {
         this.x -= this.speed;

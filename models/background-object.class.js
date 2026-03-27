@@ -1,7 +1,7 @@
 /**
- * Hintergrund-Objekt für das Spiel.
- * Wird für statische Hintergründe im Level verwendet.
- * Erbt Bewegung und Zeichnen von MovableObject.
+ * Background object used in the game.
+ * Represents static background elements within the level.
+ * Inherits movement and drawing from MovableObject.
  */
 class BackgroundObject extends MovableObject {
 
@@ -9,10 +9,10 @@ class BackgroundObject extends MovableObject {
   height = 480;
 
   /**
-   * Erstellt ein neues Hintergrund-Element.
-   * @param {string} imagePath - Pfad zum Bild.
-   * @param {number} x - X-Position im Level.
-   * @param {number} y - Y-Position im Level.
+   * Creates a new background element.
+   * @param {string} imagePath 
+   * @param {number} x 
+   * @param {number} y 
    */
   constructor(imagePath, x, y) {
     super();

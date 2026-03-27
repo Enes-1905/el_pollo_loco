@@ -1,6 +1,6 @@
 /**
- * Basis-Klasse für alle zeichnbaren Objekte im Spiel.
- * Kümmert sich um Bilder, Position und Hitbox.
+ * Base class for all drawable objects in the game.
+ * Handles images, position, and hitbox.
  */
 class DrawableObject {
 
@@ -20,8 +20,8 @@ class DrawableObject {
     };
 
     /**
-     * Lädt ein einzelnes Bild.
-     * @param {string} path
+     * Loads a single image.
+     * @param {string} path - Image path
      */
     loadImage(path) {
         this.img = new Image();
@@ -29,16 +29,16 @@ class DrawableObject {
     }
 
     /**
-     * Lädt mehrere Bilder und speichert sie im Cache.
-     * @param {string[]} arr
+     * Loads multiple images and stores them in the cache.
+     * @param {string[]} arr - Array of image paths
      */
     loadImages(arr) {
         arr.forEach(path => this.cacheImage(path));
     }
 
     /**
-     * Speichert ein Bild im Cache.
-     * @param {string} path
+     * Stores an image in the cache.
+     * @param {string} path - Image path
      */
     cacheImage(path) {
         const img = new Image();
@@ -47,8 +47,8 @@ class DrawableObject {
     }
 
     /**
-     * Zeichnet das Objekt auf das Canvas.
-     * @param {CanvasRenderingContext2D} ctx
+     * Draws the object on the canvas.
+     * @param {CanvasRenderingContext2D} ctx - Canvas context
      */
     draw(ctx) {
         if (!this.img) {
@@ -59,8 +59,8 @@ class DrawableObject {
     }
 
     /**
-     * Zeichnet eine Debug-Hitbox (optional).
-     * @param {CanvasRenderingContext2D} ctx
+     * Draws a debug hitbox (optional).
+     * @param {CanvasRenderingContext2D} ctx - Canvas context
      */
     drawFrame(ctx) {
         if (!this.img) {
@@ -75,7 +75,7 @@ class DrawableObject {
     }
 
     /**
-     * Linke Hitbox-Kante.
+     * Returns the left hitbox boundary.
      * @returns {number}
      */
     getHitboxLeft() {
@@ -83,7 +83,7 @@ class DrawableObject {
     }
 
     /**
-     * Rechte Hitbox-Kante.
+     * Returns the right hitbox boundary.
      * @returns {number}
      */
     getHitboxRight() {
@@ -91,7 +91,7 @@ class DrawableObject {
     }
 
     /**
-     * Obere Hitbox-Kante.
+     * Returns the top hitbox boundary.
      * @returns {number}
      */
     getHitboxTop() {
@@ -99,7 +99,7 @@ class DrawableObject {
     }
 
     /**
-     * Untere Hitbox-Kante.
+     * Returns the bottom hitbox boundary.
      * @returns {number}
      */
     getHitboxBottom() {

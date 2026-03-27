@@ -1,66 +1,7 @@
-/**
- * Münz-Objekt, das eingesammelt werden kann.
- */
-class Coin extends DrawableObject {
-
-    width = 120;
-    height = 120;
-    y = 120;
-    currentImage = 0;
-
-    offset = {
-        top: 35,
-        right: 35,
-        bottom: 35,
-        left: 35
-    };
-
-    IMAGES = [
-        'img/8_coin/coin_1.png',
-        'img/8_coin/coin_2.png'
-    ];
-
-    /**
-     * @param {number} x - X-Position
-     * @param {number} y - Y-Position
-     */
-    constructor(x, y = 120) {
-        super();
-        this.loadImage(this.IMAGES[0]);
-        this.loadImages(this.IMAGES);
-        this.x = x;
-        this.y = y;
-        this.animate();
-    }
-
-    /**
-     * Startet die Animation der Münze.
-     */
-    animate() {
-        setInterval(() => {
-            this.switchImage();
-        }, 200);
-    }
-
-    /**
-     * Wechselt das aktuelle Bild der Münze.
-     */
-    switchImage() {
-        this.currentImage++;
-
-        if (this.currentImage >= this.IMAGES.length) {
-            this.currentImage = 0;
-        }
-
-        let path = this.IMAGES[this.currentImage];
-        this.img = this.imageCache[path];
-    }
-}
-
 let level1;
 
 /**
- * Erstellt das komplette Level.
+ * Creates the complete level.
  */
 function initLevel() {
     level1 = new Level(
@@ -73,7 +14,8 @@ function initLevel() {
 }
 
 /**
- * Erstellt alle Gegner.
+ * Creates all enemies for the level.
+ * @returns {Array}
  */
 function createEnemies() {
     return [
@@ -90,14 +32,18 @@ function createEnemies() {
 }
 
 /**
- * Erstellt Wolken.
+ * Creates all clouds for the level.
+ * @returns {Array}
  */
 function createClouds() {
-    return [new Cloud()];
+    return [
+        new Cloud()
+    ];
 }
 
 /**
- * Erstellt Flaschen.
+ * Creates all collectible bottles for the level.
+ * @returns {Array}
  */
 function createBottles() {
     return [
@@ -114,7 +60,8 @@ function createBottles() {
 }
 
 /**
- * Erstellt Münzen.
+ * Creates all collectible coins for the level.
+ * @returns {Array}
  */
 function createCoins() {
     return [
@@ -127,7 +74,8 @@ function createCoins() {
 }
 
 /**
- * Erstellt Hintergrund.
+ * Creates all background objects for the level.
+ * @returns {Array}
  */
 function createBackground() {
     return [

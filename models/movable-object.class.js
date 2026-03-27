@@ -1,6 +1,6 @@
 /**
- * Erweiterung von DrawableObject für bewegliche Objekte.
- * Beinhaltet Bewegung, Gravitation, Kollision und Energie.
+ * Extension of DrawableObject for movable objects.
+ * Includes movement, gravity, collision, and energy.
  */
 class MovableObject extends DrawableObject {
 
@@ -19,7 +19,7 @@ class MovableObject extends DrawableObject {
     gravityInterval = null;
 
     /**
-     * Startet die Gravitation für das Objekt.
+     * Starts gravity for the object.
      */
     applyGravity() {
         if (this.gravityInterval) {
@@ -32,7 +32,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Stoppt die Gravitation.
+     * Stops gravity.
      */
     stopGravity() {
         if (!this.gravityInterval) {
@@ -44,7 +44,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Aktualisiert Fallbewegung und Bodenbegrenzung.
+     * Updates falling movement and ground collision.
      */
     updateGravity() {
         if (!this.isFalling()) {
@@ -58,7 +58,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Prüft, ob das Objekt gerade fällt.
+     * Checks whether the object is currently falling.
      * @returns {boolean}
      */
     isFalling() {
@@ -66,14 +66,14 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Stoppt die Fallbewegung.
+     * Stops the falling movement.
      */
     stopFalling() {
         this.speedY = 0;
     }
 
     /**
-     * Begrenzt das Objekt auf die Bodenhöhe.
+     * Limits the object to the ground position.
      */
     limitToGround() {
         let groundY = this.getGroundY();
@@ -85,7 +85,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Gibt die Standard-Bodenhöhe zurück.
+     * Returns the default ground position.
      * @returns {number}
      */
     getGroundY() {
@@ -93,7 +93,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Prüft, ob sich das Objekt über dem Boden befindet.
+     * Checks whether the object is above the ground.
      * @returns {boolean}
      */
     isAboveGround() {
@@ -101,8 +101,8 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Lädt ein einzelnes Bild.
-     * @param {string} path
+     * Loads a single image.
+     * @param {string} path - Image path
      */
     loadImage(path) {
         this.img = new Image();
@@ -110,16 +110,16 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Lädt mehrere Bilder in den Cache.
-     * @param {string[]} arr
+     * Loads multiple images into the cache.
+     * @param {string[]} arr - Array of image paths
      */
     loadImages(arr) {
         arr.forEach(path => this.cacheImage(path));
     }
 
     /**
-     * Speichert ein Bild im Cache.
-     * @param {string} path
+     * Stores one image in the cache.
+     * @param {string} path - Image path
      */
     cacheImage(path) {
         let img = new Image();
@@ -128,8 +128,8 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Zeichnet das Objekt auf das Canvas.
-     * @param {CanvasRenderingContext2D} ctx
+     * Draws the object on the canvas.
+     * @param {CanvasRenderingContext2D} ctx - Canvas context
      */
     draw(ctx) {
         if (!this.img) {
@@ -140,8 +140,8 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Spielt eine Bildanimation ab.
-     * @param {string[]} images
+     * Plays an image animation.
+     * @param {string[]} images - Animation image paths
      */
     playAnimation(images) {
         let i = this.currentImage % images.length;
@@ -151,7 +151,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Bewegt das Objekt nach rechts.
+     * Moves the object to the right.
      */
     moveRight() {
         this.x += this.speed;
@@ -160,7 +160,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Bewegt das Objekt nach links.
+     * Moves the object to the left.
      */
     moveLeft() {
         this.x -= this.speed;
@@ -169,7 +169,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Spielt einen Laufsound ab, falls vorhanden.
+     * Plays a walking sound if available.
      */
     playWalkingSound() {
         if (!this.walking_sound) {
@@ -180,8 +180,8 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Prüft Kollision mit einem anderen Objekt.
-     * @param {MovableObject} mo
+     * Checks collision with another object.
+     * @param {MovableObject} mo - Other movable object
      * @returns {boolean}
      */
     isColliding(mo) {
@@ -192,7 +192,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Gibt die linke Hitbox-Kante zurück.
+     * Returns the left hitbox boundary.
      * @returns {number}
      */
     getHitboxLeft() {
@@ -200,7 +200,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Gibt die rechte Hitbox-Kante zurück.
+     * Returns the right hitbox boundary.
      * @returns {number}
      */
     getHitboxRight() {
@@ -208,7 +208,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Gibt die obere Hitbox-Kante zurück.
+     * Returns the top hitbox boundary.
      * @returns {number}
      */
     getHitboxTop() {
@@ -216,7 +216,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Gibt die untere Hitbox-Kante zurück.
+     * Returns the bottom hitbox boundary.
      * @returns {number}
      */
     getHitboxBottom() {
@@ -224,7 +224,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Fügt dem Objekt Schaden zu.
+     * Deals damage to the object.
      */
     hit() {
         this.energy -= 5;
@@ -235,7 +235,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Prüft, ob das Objekt keine Energie mehr hat.
+     * Checks whether the object has no energy left.
      * @returns {boolean}
      */
     isDead() {

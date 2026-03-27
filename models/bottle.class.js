@@ -1,6 +1,6 @@
 /**
- * Flaschen-Objekt, das im Level eingesammelt werden kann.
- * Wird statisch auf dem Boden platziert.
+ * Bottle object that can be collected in the level.
+ * Placed statically on the ground.
  */
 class Bottle extends DrawableObject {
 
@@ -20,9 +20,9 @@ class Bottle extends DrawableObject {
     ];
 
     /**
-     * Erstellt eine Flasche an einer bestimmten X-Position.
-     * Wählt zufällig ein Bild aus.
-     * @param {number} x - X-Position im Level
+     * Creates a bottle at a given X position.
+     * Selects a random image.
+     * @param {number} x - X position in the level
      */
     constructor(x) {
         super();

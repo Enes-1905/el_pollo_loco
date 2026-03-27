@@ -1,6 +1,6 @@
 /**
- * Repräsentiert ein normales Huhn als Gegner.
- * Steuert Bewegung, Tod und Animation.
+ * Represents a normal chicken enemy.
+ * Handles movement, death, and animation.
  */
 class Chicken extends MovableObject {
 
@@ -29,8 +29,8 @@ class Chicken extends MovableObject {
     ];
 
     /**
-     * Erstellt ein normales Huhn.
-     * @param {number} x
+     * Creates a normal chicken.
+     * @param {number} x - X position in the level
      */
     constructor(x) {
         super();
@@ -42,7 +42,7 @@ class Chicken extends MovableObject {
     }
 
     /**
-     * Lädt alle Bilder des Huhns.
+     * Loads all chicken images.
      */
     loadChickenImages() {
         this.loadImage(this.images_walking[0]);
@@ -51,7 +51,7 @@ class Chicken extends MovableObject {
     }
 
     /**
-     * Gibt eine zufällige Laufgeschwindigkeit zurück.
+     * Returns a random movement speed.
      * @returns {number}
      */
     getRandomSpeed() {
@@ -59,7 +59,7 @@ class Chicken extends MovableObject {
     }
 
     /**
-     * Startet Bewegung und Animation.
+     * Starts movement and animation loops.
      */
     animate() {
         this.startMovementLoop();
@@ -67,7 +67,7 @@ class Chicken extends MovableObject {
     }
 
     /**
-     * Startet den Bewegungs-Loop.
+     * Starts the movement loop.
      */
     startMovementLoop() {
         setInterval(() => {
@@ -80,7 +80,7 @@ class Chicken extends MovableObject {
     }
 
     /**
-     * Startet den Animations-Loop.
+     * Starts the animation loop.
      */
     startAnimationLoop() {
         setInterval(() => {
@@ -93,7 +93,7 @@ class Chicken extends MovableObject {
     }
 
     /**
-     * Bewegt das Huhn nach links.
+     * Handles chicken movement.
      */
     handleMovement() {
         if (this.isDead()) {
@@ -104,7 +104,7 @@ class Chicken extends MovableObject {
     }
 
     /**
-     * Bewegt das Huhn nach links.
+     * Moves the chicken to the left.
      */
     moveChickenLeft() {
         this.x -= this.speed;
@@ -112,7 +112,7 @@ class Chicken extends MovableObject {
     }
 
     /**
-     * Spielt die passende Animation ab.
+     * Plays the correct animation.
      */
     handleAnimation() {
         if (this.isDead()) {
@@ -124,14 +124,14 @@ class Chicken extends MovableObject {
     }
 
     /**
-     * Zeigt das tote Huhn an.
+     * Displays the dead chicken image.
      */
     showDeadImage() {
         this.img = this.imageCache[this.IMAGES_DEAD[0]];
     }
 
     /**
-     * Tötet das Huhn.
+     * Kills the chicken.
      */
     hit() {
         if (this.isDead()) {
@@ -143,7 +143,7 @@ class Chicken extends MovableObject {
     }
 
     /**
-     * Prüft, ob das Huhn tot ist.
+     * Checks whether the chicken is dead.
      * @returns {boolean}
      */
     isDead() {

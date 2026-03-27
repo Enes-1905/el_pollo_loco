@@ -1,6 +1,6 @@
 /**
- * Repräsentiert ein kleines Huhn als Gegner.
- * Schneller als normale Hühner, gleiche Logik.
+ * Represents a small chicken enemy.
+ * Faster than normal chickens, same logic.
  */
 class SmallChicken extends MovableObject {
 
@@ -28,8 +28,8 @@ class SmallChicken extends MovableObject {
     ];
 
     /**
-     * Erstellt ein kleines Huhn.
-     * @param {number} x
+     * Creates a small chicken.
+     * @param {number} x - X position
      */
     constructor(x) {
         super();
@@ -41,7 +41,7 @@ class SmallChicken extends MovableObject {
     }
 
     /**
-     * Lädt alle Bilder des kleinen Huhns.
+     * Loads all images of the small chicken.
      */
     loadChickenImages() {
         this.loadImage(this.images_walking[0]);
@@ -50,7 +50,7 @@ class SmallChicken extends MovableObject {
     }
 
     /**
-     * Gibt eine zufällige Geschwindigkeit zurück.
+     * Returns a random movement speed.
      * @returns {number}
      */
     getRandomSpeed() {
@@ -58,7 +58,7 @@ class SmallChicken extends MovableObject {
     }
 
     /**
-     * Startet Bewegung und Animation.
+     * Starts movement and animation.
      */
     animate() {
         this.startMovementLoop();
@@ -66,7 +66,7 @@ class SmallChicken extends MovableObject {
     }
 
     /**
-     * Startet den Bewegungs-Loop.
+     * Starts the movement loop.
      */
     startMovementLoop() {
         setInterval(() => {
@@ -79,7 +79,7 @@ class SmallChicken extends MovableObject {
     }
 
     /**
-     * Startet den Animations-Loop.
+     * Starts the animation loop.
      */
     startAnimationLoop() {
         setInterval(() => {
@@ -92,7 +92,7 @@ class SmallChicken extends MovableObject {
     }
 
     /**
-     * Bewegt das kleine Huhn nach links.
+     * Handles movement of the small chicken.
      */
     handleMovement() {
         if (this.isDead()) {
@@ -103,7 +103,7 @@ class SmallChicken extends MovableObject {
     }
 
     /**
-     * Bewegt das Huhn nach links.
+     * Moves the chicken to the left.
      */
     moveChickenLeft() {
         this.x -= this.speed;
@@ -111,7 +111,7 @@ class SmallChicken extends MovableObject {
     }
 
     /**
-     * Spielt die passende Animation ab.
+     * Plays the correct animation.
      */
     handleAnimation() {
         if (this.isDead()) {
@@ -123,14 +123,14 @@ class SmallChicken extends MovableObject {
     }
 
     /**
-     * Zeigt das tote kleine Huhn an.
+     * Displays the dead chicken image.
      */
     showDeadImage() {
         this.img = this.imageCache[this.IMAGES_DEAD[0]];
     }
 
     /**
-     * Tötet das kleine Huhn.
+     * Kills the small chicken.
      */
     hit() {
         if (this.isDead()) {
@@ -142,7 +142,7 @@ class SmallChicken extends MovableObject {
     }
 
     /**
-     * Prüft, ob das kleine Huhn tot ist.
+     * Checks whether the chicken is dead.
      * @returns {boolean}
      */
     isDead() {

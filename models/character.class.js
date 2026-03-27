@@ -1,9 +1,8 @@
 /**
- * Steuert den spielbaren Charakter.
- * Beinhaltet Bewegung, Animationen, Sounds und Sammelobjekte.
+ * Controls the playable character.
+ * Includes movement, animations, sounds, and collectible items.
  */
 class Charackter extends MovableObject {
-
     height = 280;
     width = 120;
     y = 150;
@@ -14,16 +13,13 @@ class Charackter extends MovableObject {
     coins = 0;
     lastAction = Date.now();
     sleepSoundPlayed = false;
-
     sleep_sound = new Audio('audio/sleep.mp3');
-
     offset = {
         top: 110,
         right: 30,
         bottom: 15,
         left: 30
     };
-
     IMAGES_IDLE = [
         'img/2_character_pepe/1_idle/idle/I-1.png',
         'img/2_character_pepe/1_idle/idle/I-2.png',
@@ -36,7 +32,6 @@ class Charackter extends MovableObject {
         'img/2_character_pepe/1_idle/idle/I-9.png',
         'img/2_character_pepe/1_idle/idle/I-10.png'
     ];
-
     IMAGES_LONG_IDLE = [
         'img/2_character_pepe/1_idle/long_idle/I-11.png',
         'img/2_character_pepe/1_idle/long_idle/I-12.png',
@@ -49,7 +44,6 @@ class Charackter extends MovableObject {
         'img/2_character_pepe/1_idle/long_idle/I-19.png',
         'img/2_character_pepe/1_idle/long_idle/I-20.png'
     ];
-
     images_walking = [
         'img/2_character_pepe/2_walk/W-21.png',
         'img/2_character_pepe/2_walk/W-22.png',
@@ -58,7 +52,6 @@ class Charackter extends MovableObject {
         'img/2_character_pepe/2_walk/W-25.png',
         'img/2_character_pepe/2_walk/W-26.png'
     ];
-
     images_jumping = [
         'img/2_character_pepe/3_jump/J-31.png',
         'img/2_character_pepe/3_jump/J-32.png',
@@ -70,7 +63,6 @@ class Charackter extends MovableObject {
         'img/2_character_pepe/3_jump/J-38.png',
         'img/2_character_pepe/3_jump/J-39.png'
     ];
-
     IMAGES_DEAD = [
         'img/2_character_pepe/5_dead/D-51.png',
         'img/2_character_pepe/5_dead/D-52.png',
@@ -80,13 +72,11 @@ class Charackter extends MovableObject {
         'img/2_character_pepe/5_dead/D-56.png',
         'img/2_character_pepe/5_dead/D-57.png'
     ];
-
     IMAGES_HURT = [
         'img/2_character_pepe/4_hurt/H-41.png',
         'img/2_character_pepe/4_hurt/H-42.png',
         'img/2_character_pepe/4_hurt/H-43.png'
     ];
-
     BOTTLE_IMAGES = [
         'img/6_salsa_bottle/1_salsa_bottle_on_ground.png',
         'img/6_salsa_bottle/2_salsa_bottle_on_ground.png',
@@ -101,9 +91,8 @@ class Charackter extends MovableObject {
         'img/6_salsa_bottle/bottle_rotation/bottle_splash/5_bottle_splash.png',
         'img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png'
     ];
-
     /**
-     * Erstellt den Charakter und startet Animation sowie Gravitation.
+     * Creates the character and starts animation and gravity.
      */
     constructor() {
         super();
@@ -112,9 +101,8 @@ class Charackter extends MovableObject {
         this.applyGravity();
         this.animate();
     }
-
     /**
-     * Lädt alle Bilder des Charakters.
+     * Loads all character images.
      */
     loadCharacterImages() {
         this.loadImage(this.images_walking[0]);
@@ -126,9 +114,8 @@ class Charackter extends MovableObject {
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.BOTTLE_IMAGES);
     }
-
     /**
-     * Bereitet den Schlaf-Sound vor.
+     * Prepares the sleep sound.
      */
     prepareSleepSound() {
         this.sleep_sound.volume = 0.35;
@@ -136,48 +123,42 @@ class Charackter extends MovableObject {
     }
 
     /**
-     * Startet Bewegungs- und Animations-Loop.
+     * Starts movement and animation loops.
      */
     animate() {
         this.startMovementLoop();
         this.startAnimationLoop();
     }
-
     /**
-     * Startet den Bewegungs-Loop.
+     * Starts the movement loop.
      */
     startMovementLoop() {
         setInterval(() => {
             if (worldObj && worldObj.isPaused) {
                 return;
             }
-
             this.handleMovement();
         }, 1000 / 60);
     }
-
     /**
-     * Startet den Animations-Loop.
+     * Starts the animation loop.
      */
     startAnimationLoop() {
         setInterval(() => {
             if (worldObj && worldObj.isPaused) {
                 return;
             }
-
             this.handleAnimation();
         }, 120);
     }
-
     /**
-     * Steuert Bewegung, Kamera und Lauf-Sound.
+     * Handles movement, camera, and running sound.
      */
     handleMovement() {
         if (!this.world || this.isDead()) {
             stopRunningSound();
             return;
         }
-
         this.stopSleepIfActive();
         this.updateLastAction();
         this.handleWalkRight();
@@ -186,254 +167,214 @@ class Charackter extends MovableObject {
         this.updateCamera();
         this.handleRunningSound();
     }
-
     /**
-     * Stoppt Schlaf-Sound bei Aktivität.
+     * Stops the sleep sound when the player is active.
      */
     stopSleepIfActive() {
         if (!this.isDoingSomething()) {
             return;
         }
-
         this.stopSleepSound();
         this.sleepSoundPlayed = false;
     }
-
     /**
-     * Aktualisiert die letzte Aktion bei Eingabe.
+     * Updates the last action time on input.
      */
     updateLastAction() {
         if (!this.isDoingSomething()) {
             return;
         }
-
         this.lastAction = Date.now();
     }
-
     /**
-     * Bewegt den Charakter nach rechts.
+     * Moves the character to the right.
      */
     handleWalkRight() {
         let maxX = this.world.level.level_end_x - this.width;
-
         if (this.world.keyboard.right && this.x < maxX) {
             this.moveRight();
         }
     }
-
     /**
-     * Bewegt den Charakter nach links.
+     * Moves the character to the left.
      */
     handleWalkLeft() {
         if (this.world.keyboard.left && this.x > 0) {
             this.moveLeft();
         }
     }
-
     /**
-     * Führt einen Sprung aus.
+     * Makes the character jump.
      */
     handleJump() {
         let jumpPressed = this.world.keyboard.up || this.world.keyboard.space;
-
         if (jumpPressed && !this.isAboveGround()) {
             this.jump();
         }
     }
-
     /**
-     * Steuert den Lauf-Sound.
+     * Controls the running sound.
      */
     handleRunningSound() {
         if (this.isAboveGround()) {
             stopRunningSound();
             return;
         }
-
         if (this.isWalking()) {
             playRunningSound();
             return;
         }
-
         stopRunningSound();
     }
-
     /**
-     * Aktualisiert die Kameraposition.
+     * Updates the camera position.
      */
     updateCamera() {
         let cameraX = -this.x + 120;
         let maxCameraX = this.getMaxCameraX();
         this.world.camera_x = this.limitCameraX(cameraX, maxCameraX);
     }
-
     /**
-     * Gibt die maximale Kameragrenze zurück.
+     * Returns the maximum camera boundary.
      * @returns {number}
      */
     getMaxCameraX() {
         return -(this.world.level.level_end_x - this.world.canvas.width);
     }
-
     /**
-     * Begrenzt die Kamera auf den Levelbereich.
-     * @param {number} cameraX
-     * @param {number} maxCameraX
+     * Limits the camera to the level boundaries.
+     * @param {number} cameraX - Current camera position
+     * @param {number} maxCameraX - Maximum allowed camera position
      * @returns {number}
      */
     limitCameraX(cameraX, maxCameraX) {
         if (cameraX > 0) {
             return 0;
         }
-
         if (cameraX < maxCameraX) {
             return maxCameraX;
         }
-
         return cameraX;
     }
-
     /**
-     * Wählt die passende Animation aus.
+     * Selects the correct animation.
      */
     handleAnimation() {
         if (!this.world) {
             return;
         }
-
         if (this.isDead()) {
             this.showDeadAnimation();
             return;
         }
-
         if (this.isHurt()) {
             this.showHurtAnimation();
             return;
         }
-
         if (this.isAboveGround()) {
             this.showJumpAnimation();
             return;
         }
-
         if (this.isWalking()) {
             this.showWalkAnimation();
             return;
         }
-
         if (this.isSleeping()) {
             this.showSleepAnimation();
             return;
         }
-
         this.showIdleAnimation();
     }
-
     /**
-     * Zeigt die Todesanimation.
+     * Shows the dead animation.
      */
     showDeadAnimation() {
         stopRunningSound();
         this.stopSleepSound();
         this.playAnimation(this.IMAGES_DEAD);
     }
-
     /**
-     * Zeigt die Hurt-Animation.
+     * Shows the hurt animation.
      */
     showHurtAnimation() {
         this.resetSleepState();
         this.playAnimation(this.IMAGES_HURT);
     }
-
     /**
-     * Zeigt die Sprung-Animation.
+     * Shows the jump animation.
      */
     showJumpAnimation() {
         this.resetSleepState();
         this.playAnimation(this.images_jumping);
     }
-
     /**
-     * Zeigt die Lauf-Animation.
+     * Shows the walking animation.
      */
     showWalkAnimation() {
         this.resetSleepState();
         this.playAnimation(this.images_walking);
     }
-
-    /**
-     * Zeigt die Schlaf-Animation.
+ /**
+     * Shows the sleeping animation.
      */
     showSleepAnimation() {
         this.playAnimation(this.IMAGES_LONG_IDLE);
         this.playSleepSoundOnce();
     }
-
     /**
-     * Zeigt die Idle-Animation.
+     * Shows the idle animation.
      */
     showIdleAnimation() {
         this.resetSleepState();
         this.playAnimation(this.IMAGES_IDLE);
     }
-
     /**
-     * Setzt den Schlafzustand zurück.
+     * Resets the sleep state.
      */
     resetSleepState() {
         this.stopSleepSound();
         this.sleepSoundPlayed = false;
     }
-
     /**
-     * Behandelt Fehler beim Schlaf-Sound.
-     * @param {Error} error
+     * Handles errors of the sleep sound.
+     * @param {Error} error - Audio error
      */
     handleSleepSoundError(error) {
         if (!error || error.name === 'AbortError') {
             return;
         }
-
         console.warn('Sleep sound error:', error);
     }
-
     /**
-     * Spielt den Schlaf-Sound einmal ab.
+     * Plays the sleep sound once.
      */
     playSleepSoundOnce() {
         if (soundMuted || this.sleepSoundPlayed) {
             return;
         }
-
         this.sleep_sound.currentTime = 0;
         const playPromise = this.sleep_sound.play();
-
         if (playPromise && typeof playPromise.catch === 'function') {
             playPromise.catch(error => this.handleSleepSoundError(error));
         }
-
         this.sleepSoundPlayed = true;
     }
-
     /**
-     * Stoppt den Schlaf-Sound.
+     * Stops the sleep sound.
      */
     stopSleepSound() {
         this.sleep_sound.pause();
         this.sleep_sound.currentTime = 0;
     }
-
     /**
-     * Prüft, ob der Charakter läuft.
+     * Checks whether the character is walking.
      * @returns {boolean}
      */
     isWalking() {
         return this.world.keyboard.right || this.world.keyboard.left;
     }
-
     /**
-     * Prüft, ob der Spieler etwas aktiv macht.
+     * Checks whether the player is actively doing something.
      * @returns {boolean}
      */
     isDoingSomething() {
@@ -443,9 +384,8 @@ class Charackter extends MovableObject {
             this.world.keyboard.space ||
             this.world.keyboard.throw;
     }
-
     /**
-     * Prüft, ob der Charakter schlafen soll.
+     * Checks whether the character should sleep.
      * @returns {boolean}
      */
     isSleeping() {
@@ -455,9 +395,8 @@ class Charackter extends MovableObject {
         let notJumping = !this.isAboveGround();
         return idleLongEnough && standingStill && notJumping;
     }
-
     /**
-     * Führt einen Sprung aus.
+     * Makes the character jump.
      */
     jump() {
         this.speedY = 22;
@@ -465,36 +404,31 @@ class Charackter extends MovableObject {
         stopRunningSound();
         this.resetSleepState();
     }
-
     /**
-     * Fügt dem Charakter Schaden zu.
+     * Deals damage to the character.
      */
     hit() {
         if (this.isHurt()) {
             return;
         }
-
         this.reduceEnergy(5);
         this.lastHit = Date.now();
         this.lastAction = Date.now();
         stopRunningSound();
         this.resetSleepState();
     }
-
     /**
-     * Verringert die Energie des Charakters.
-     * @param {number} amount
+     * Reduces the character's energy.
+     * @param {number} amount - Energy amount
      */
     reduceEnergy(amount) {
         this.energy -= amount;
-
         if (this.energy < 0) {
             this.energy = 0;
         }
     }
-
     /**
-     * Prüft, ob der Charakter gerade verletzt ist.
+     * Checks whether the character is currently hurt.
      * @returns {boolean}
      */
     isHurt() {
@@ -502,55 +436,47 @@ class Charackter extends MovableObject {
         timePassed = timePassed / 1000;
         return timePassed < 1;
     }
-
     /**
-     * Gibt die Bodenhöhe des Charakters zurück.
+     * Returns the ground position of the character.
      * @returns {number}
      */
     getGroundY() {
         return 150;
     }
-
     /**
-     * Sammelt eine Flasche ein.
+     * Collects a bottle.
      */
     collectBottle() {
         this.bottles += 1;
         this.registerAction();
     }
-
     /**
-     * Sammelt eine Münze ein.
+     * Collects a coin.
      */
     collectCoin() {
         if (this.coins < 5) {
             this.coins += 1;
         }
-
         this.registerAction();
     }
-
     /**
-     * Prüft, ob eine Flasche geworfen werden kann.
+     * Checks whether a bottle can be thrown.
      * @returns {boolean}
      */
     canThrowBottle() {
         return this.bottles > 0;
     }
-
     /**
-     * Verbraucht eine Flasche.
+     * Uses one bottle.
      */
     useBottle() {
         if (this.bottles > 0) {
             this.bottles -= 1;
         }
-
         this.registerAction();
     }
-
     /**
-     * Registriert eine neue Aktion des Spielers.
+     * Registers a new player action.
      */
     registerAction() {
         this.lastAction = Date.now();

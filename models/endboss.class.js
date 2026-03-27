@@ -1,6 +1,6 @@
 /**
- * Repräsentiert den Endboss des Spiels.
- * Steuert Bewegung, Angriff, Hitboxen und Animationen.
+ * Represents the endboss of the game.
+ * Handles movement, attacks, hitboxes, and animations.
  */
 class Endboss extends MovableObject {
 
@@ -66,8 +66,8 @@ class Endboss extends MovableObject {
     ];
 
     /**
-     * Erstellt den Endboss.
-     * @param {number} x
+     * Creates the endboss.
+     * @param {number} x - X position in the level
      */
     constructor(x = 1700) {
         super();
@@ -78,7 +78,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Lädt alle Bilder des Endbosses.
+     * Loads all boss images.
      */
     loadBossImages() {
         this.loadImage(this.IMAGES_ALERT[0]);
@@ -90,7 +90,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Startet Bewegung und Animation.
+     * Starts movement and animation loops.
      */
     animate() {
         this.startMovementLoop();
@@ -98,7 +98,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Startet den Bewegungs-Loop.
+     * Starts the movement loop.
      */
     startMovementLoop() {
         setInterval(() => {
@@ -113,7 +113,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Startet den Animations-Loop.
+     * Starts the animation loop.
      */
     startAnimationLoop() {
         setInterval(() => {
@@ -126,7 +126,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Steuert die Bewegung und Angriffe des Bosses.
+     * Handles boss movement and attacks.
      */
     handleMovement() {
         if (!this.activated || !this.world) {
@@ -144,7 +144,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Wählt die passende Boss-Animation.
+     * Selects the correct boss animation.
      */
     handleAnimation() {
         if (this.isDead()) {
@@ -171,7 +171,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Gibt die Mitte des Charakters zurück.
+     * Returns the character center position.
      * @returns {number}
      */
     getCharacterCenter() {
@@ -179,7 +179,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Gibt die Mitte des Bosses zurück.
+     * Returns the boss center position.
      * @returns {number}
      */
     getBossCenter() {
@@ -187,7 +187,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Berechnet den Abstand zum Charakter.
+     * Calculates the distance to the character.
      * @param {number} characterCenter
      * @returns {number}
      */
@@ -196,7 +196,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Lässt den Boss dem Charakter folgen.
+     * Makes the boss follow the character.
      * @param {number} characterCenter
      */
     followCharacter(characterCenter) {
@@ -215,7 +215,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Bewegt den Boss nach links.
+     * Moves the boss to the left.
      */
     moveBossLeft() {
         this.x -= this.speed;
@@ -223,7 +223,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Bewegt den Boss nach rechts.
+     * Moves the boss to the right.
      */
     moveBossRight() {
         this.x += this.speed;
@@ -231,7 +231,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Prüft, ob der Boss gerade läuft.
+     * Checks whether the boss is walking.
      * @returns {boolean}
      */
     isWalking() {
@@ -244,7 +244,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Prüft, ob der Boss wieder angreifen darf.
+     * Checks if the boss can attack again.
      * @returns {boolean}
      */
     canAttack() {
@@ -252,7 +252,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Startet den Angriff des Bosses.
+     * Starts the boss attack.
      */
     startAttack() {
         this.attacking = true;
@@ -262,7 +262,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Richtet den Boss vor dem Angriff aus.
+     * Adjusts direction before attacking.
      */
     updateAttackDirection() {
         if (this.world && this.world.character.x < this.x) {
@@ -274,7 +274,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Beendet den Angriff nach kurzer Zeit.
+     * Ends the attack after a short delay.
      */
     endAttackLater() {
         setTimeout(() => {
@@ -287,7 +287,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Gibt die Angriffshitbox zurück.
+     * Returns the attack hitbox.
      * @returns {{x:number, y:number, width:number, height:number}}
      */
     getAttackHitbox() {
@@ -303,11 +303,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Gibt die rechte Angriffshitbox zurück.
-     * @param {number} width
-     * @param {number} height
-     * @param {number} y
-     * @returns {{x:number, y:number, width:number, height:number}}
+     * Returns the right attack hitbox.
      */
     getRightAttackHitbox(width, height, y) {
         return {
@@ -319,11 +315,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Gibt die linke Angriffshitbox zurück.
-     * @param {number} width
-     * @param {number} height
-     * @param {number} y
-     * @returns {{x:number, y:number, width:number, height:number}}
+     * Returns the left attack hitbox.
      */
     getLeftAttackHitbox(width, height, y) {
         return {
@@ -335,8 +327,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Gibt die Körper-Hitbox zurück.
-     * @returns {{x:number, y:number, width:number, height:number}}
+     * Returns the body hitbox.
      */
     getBodyHitbox() {
         return {
@@ -348,10 +339,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Prüft, ob der Charakter in einer Hitbox steht.
-     * @param {Charackter} character
-     * @param {{x:number, y:number, width:number, height:number}} hitbox
-     * @returns {boolean}
+     * Checks if the character is inside a hitbox.
      */
     isCharacterInsideHitbox(character, hitbox) {
         return character.getHitboxRight() > hitbox.x &&
@@ -361,9 +349,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Prüft, ob der Charakter in Angriffsreichweite ist.
-     * @param {Charackter} character
-     * @returns {boolean}
+     * Checks if the character is in attack range.
      */
     characterInAttackRange(character) {
         let attackHitbox = this.getAttackHitbox();
@@ -374,7 +360,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Fügt dem Boss Schaden zu.
+     * Damages the boss.
      */
     hit() {
         if (this.isDead()) {
@@ -390,7 +376,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Verringert die Energie des Bosses.
+     * Reduces boss energy.
      * @param {number} amount
      */
     reduceEnergy(amount) {
@@ -402,7 +388,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Prüft, ob der Boss gerade verletzt ist.
+     * Checks if the boss is hurt.
      * @returns {boolean}
      */
     isHurt() {
@@ -412,7 +398,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Prüft, ob der Boss tot ist.
+     * Checks if the boss is dead.
      * @returns {boolean}
      */
     isDead() {

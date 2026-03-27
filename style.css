@@ -249,7 +249,8 @@ bottom: 26px;
 display: none;
 justify-content: space-between;
 align-items: center;
-padding: 0 34px;
+width: 100%;
+padding: 0 18px;
 z-index: 5;
 pointer-events: none;
 }
@@ -259,6 +260,15 @@ pointer-events: none;
 display: flex;
 gap: 12px;
 pointer-events: auto;
+flex: 1;
+}
+
+.mobile-left {
+justify-content: flex-start;
+}
+
+.mobile-right {
+justify-content: flex-end;
 }
 
 .mobile-btn {
@@ -442,7 +452,7 @@ display: block;
 
 #mobile-controls {
 bottom: 30px;
-padding: 0 48px;
+padding: 0 20px;
 }
 
 .mobile-btn {
@@ -557,7 +567,7 @@ font-size: 13px;
 
 #mobile-controls {
 bottom: 24px;
-padding: 0 24px;
+padding: 0 14px;
 }
 
 .mobile-left,
@@ -682,7 +692,7 @@ aspect-ratio: 3 / 2;
 
 #mobile-controls {
 bottom: 14px;
-padding: 0 18px;
+padding: 0 10px;
 }
 
 .mobile-btn {

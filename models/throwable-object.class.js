@@ -1,6 +1,6 @@
 /**
- * Repräsentiert eine geworfene Flasche.
- * Steuert Flugbahn, Rotation, Aufprall und Splash-Animation.
+ * Represents a thrown bottle.
+ * Controls trajectory, rotation, impact, and splash animation.
  */
 class ThrowableObject extends MovableObject {
 
@@ -27,10 +27,10 @@ class ThrowableObject extends MovableObject {
     throwStartX = 0;
 
     /**
-     * Erstellt eine neue geworfene Flasche.
-     * @param {number} x
-     * @param {number} y
-     * @param {boolean} otherdirection
+     * Creates a new throwable bottle.
+     * @param {number} x - X position
+     * @param {number} y - Y position
+     * @param {boolean} otherdirection - Throw direction
      */
     constructor(x, y, otherdirection = false) {
         super();
@@ -40,7 +40,7 @@ class ThrowableObject extends MovableObject {
     }
 
     /**
-     * Lädt alle Bilder der Flasche.
+     * Loads all bottle images.
      */
     loadBottleImages() {
         this.loadImage('img/6_salsa_bottle/salsa_bottle.png');
@@ -49,7 +49,7 @@ class ThrowableObject extends MovableObject {
     }
 
     /**
-     * Setzt Position und Richtung der Flasche.
+     * Sets position and direction of the bottle.
      * @param {number} x
      * @param {number} y
      * @param {boolean} otherdirection
@@ -64,7 +64,7 @@ class ThrowableObject extends MovableObject {
     }
 
     /**
-     * Gibt die Bodenhöhe der Flasche zurück.
+     * Returns the ground position for the bottle.
      * @returns {number}
      */
     getGroundY() {
@@ -72,7 +72,7 @@ class ThrowableObject extends MovableObject {
     }
 
     /**
-     * Startet den Wurf der Flasche.
+     * Starts the throw.
      */
     throw() {
         this.speedY = 20;
@@ -81,7 +81,7 @@ class ThrowableObject extends MovableObject {
     }
 
     /**
-     * Startet den Flug-Loop der Flasche.
+     * Starts the throw movement loop.
      */
     startThrowLoop() {
         this.throwInterval = setInterval(() => {
@@ -100,7 +100,7 @@ class ThrowableObject extends MovableObject {
     }
 
     /**
-     * Bewegt die Flasche horizontal.
+     * Moves the bottle horizontally.
      */
     moveBottle() {
         if (this.otherdirection) {
@@ -112,7 +112,7 @@ class ThrowableObject extends MovableObject {
     }
 
     /**
-     * Prüft, ob die Flasche aufprallen soll.
+     * Checks if the bottle should impact.
      */
     checkBottleImpact() {
         if (this.hasReachedMaxDistance()) {
@@ -126,7 +126,7 @@ class ThrowableObject extends MovableObject {
     }
 
     /**
-     * Prüft, ob die maximale Wurfweite erreicht ist.
+     * Checks if max throw distance is reached.
      * @returns {boolean}
      */
     hasReachedMaxDistance() {
@@ -134,7 +134,7 @@ class ThrowableObject extends MovableObject {
     }
 
     /**
-     * Prüft, ob die Flasche den Boden berührt hat.
+     * Checks if the bottle touched the ground.
      * @returns {boolean}
      */
     hasTouchedGround() {
@@ -142,7 +142,7 @@ class ThrowableObject extends MovableObject {
     }
 
     /**
-     * Startet die Splash-Animation.
+     * Starts the splash animation.
      */
     splash() {
         if (this.hasHit) {
@@ -158,7 +158,7 @@ class ThrowableObject extends MovableObject {
     }
 
     /**
-     * Stoppt den Flug-Loop.
+     * Stops the throw loop.
      */
     stopThrowLoop() {
         if (!this.throwInterval) {
@@ -170,7 +170,7 @@ class ThrowableObject extends MovableObject {
     }
 
     /**
-     * Spielt den Treffer-Sound.
+     * Plays the hit sound.
      */
     playSplashSound() {
         if (typeof playBottleHitSound === 'function') {
@@ -179,7 +179,7 @@ class ThrowableObject extends MovableObject {
     }
 
     /**
-     * Bereitet die Splash-Animation vor.
+     * Prepares the splash animation.
      */
     prepareSplashAnimation() {
         this.speedY = 0;
@@ -187,7 +187,7 @@ class ThrowableObject extends MovableObject {
     }
 
     /**
-     * Startet die Splash-Bildfolge.
+     * Starts the splash animation loop.
      */
     startSplashLoop() {
         let splashFrame = 0;
@@ -208,7 +208,7 @@ class ThrowableObject extends MovableObject {
     }
 
     /**
-     * Prüft, ob noch Splash-Bilder übrig sind.
+     * Checks if there are remaining splash frames.
      * @param {number} splashFrame
      * @returns {boolean}
      */
@@ -217,7 +217,7 @@ class ThrowableObject extends MovableObject {
     }
 
     /**
-     * Zeigt ein Splash-Bild an.
+     * Displays a splash frame.
      * @param {number} splashFrame
      */
     showSplashFrame(splashFrame) {
@@ -226,7 +226,7 @@ class ThrowableObject extends MovableObject {
     }
 
     /**
-     * Beendet die Splash-Animation.
+     * Finishes the splash animation.
      */
     finishSplashAnimation() {
         clearInterval(this.splashInterval);
